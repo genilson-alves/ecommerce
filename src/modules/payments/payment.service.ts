@@ -1,9 +1,9 @@
-import Stripe from 'stripe';
-import prisma from '../../config/db';
-import { addEmailJob } from '../../common/services/queue.service';
+import Stripe from "stripe";
+import prisma from "../../config/db";
+import { addEmailJob } from "../../common/services/queue.service";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2023-10-16',
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+  apiVersion: "2025-01-27.acacia" as any,
 });
 
 export const createPaymentIntent = async (orderId: string, userId: string) => {
@@ -12,13 +12,13 @@ export const createPaymentIntent = async (orderId: string, userId: string) => {
     include: { user: true },
   });
 
-  if (!order) throw new Error('Order not found');
-  if (order.userId !== userId) throw new Error('Unauthorized');
-  if (order.status !== 'PENDING') throw new Error('Order is not pending');
+  if (!order) throw new Error("Order not found");
+  if (order.userId !== userId) throw new Error("Unauthorized");
+  if (order.status !== "PENDING") throw new Error("Order is not pending");
 
   const paymentIntent = await stripe.paymentIntents.create({
     amount: Math.round(Number(order.totalAmount) * 100), // Stripe uses cents
-    currency: 'usd',
+    currency: "usd",
     metadata: {
       orderId: order.id,
       userEmail: order.user.email,

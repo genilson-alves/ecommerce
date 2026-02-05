@@ -6,6 +6,10 @@ export const createIntent = async (req: Request, res: Response) => {
     const { orderId } = req.body;
     const userId = req.user?.userId;
 
+    if (!orderId) {
+      return res.status(400).json({ message: 'orderId is required' });
+    }
+
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
     const intent = await paymentService.createPaymentIntent(orderId, userId);
