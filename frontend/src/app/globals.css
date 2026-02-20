@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bone: #E3E7D3;
+  --color-clay: #BDC2BF;
+  --color-sage: #989C94;
+  --color-deep-olive: #25291C;
+  --color-sulfur: #E6E49F;
+  --font-geist-sans: var(--font-geist-sans);
+}
+
+@layer base {
+  body {
+    @apply bg-bone text-deep-olive antialiased font-sans;
+  }
+}
