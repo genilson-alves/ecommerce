@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { ShoppingCart, Menu, Search } from "lucide-react";
+import { Menu, Search } from "lucide-react";
+import { CartDrawer } from "./cart-drawer";
 
 export const Navbar = () => {
   return (
@@ -18,10 +19,7 @@ export const Navbar = () => {
 
         <div className="flex items-center gap-6">
           <button className="hover:text-sage transition-colors"><Search size={20} /></button>
-          <button className="hover:text-sage transition-colors relative">
-            <ShoppingCart size={20} />
-            <span className="absolute -top-2 -right-2 bg-deep-olive text-bone text-[8px] h-4 w-4 rounded-full flex items-center justify-center font-bold">0</span>
-          </button>
+          <CartDrawer />
           <button className="md:hidden"><Menu size={20} /></button>
         </div>
       </div>

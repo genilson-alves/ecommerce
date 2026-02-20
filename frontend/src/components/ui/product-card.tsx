@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useCart } from "@/lib/store";
 
 interface Product {
   id: string;
@@ -12,6 +12,8 @@ interface Product {
 }
 
 export const ProductCard = ({ product }: { product: Product }) => {
+  const { addItem } = useCart();
+
   return (
     <motion.div
       layout
@@ -35,6 +37,7 @@ export const ProductCard = ({ product }: { product: Product }) => {
         <motion.button
           initial={{ y: "100%" }}
           whileHover={{ y: 0 }}
+          onClick={() => addItem({ id: product.id, name: product.name, price: product.price })}
           className="absolute bottom-0 left-0 w-full bg-sulfur text-deep-olive py-4 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-transform duration-300 translate-y-full group-hover:translate-y-0"
         >
           <Plus size={16} /> Add to Cart
