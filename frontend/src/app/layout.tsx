@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/navbar";
 import Providers from "./providers";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-deep-olive selection:text-bone`}
       >
         <Providers>
+          <Toaster 
+            position="bottom-right" 
+            toastOptions={{
+              className: "bg-bone border-sage text-deep-olive rounded-none font-bold uppercase tracking-widest text-[10px]",
+            }}
+          />
           <Navbar />
           <main>{children}</main>
         </Providers>

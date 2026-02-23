@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Menu, Search } from "lucide-react";
+import { Menu, Search, User } from "lucide-react";
 import { CartDrawer } from "./cart-drawer";
 
 export const Navbar = () => {
@@ -20,6 +20,9 @@ export const Navbar = () => {
         <div className="flex items-center gap-6">
           <button className="hover:text-sage transition-colors"><Search size={20} /></button>
           <CartDrawer />
+          <Link href="/login" className="hover:text-sage transition-colors">
+            <User size={20} />
+          </Link>
           <button className="md:hidden"><Menu size={20} /></button>
         </div>
       </div>

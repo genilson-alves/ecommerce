@@ -23,7 +23,15 @@ export const login = async (req: Request, res: Response) => {
   try {
     const data = loginSchema.parse(req.body);
     const result = await loginUser(data);
-    res.json(result);
+    
+    res.cookie('ecommerce_token', result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 3600000 * 24, // 24 hours
+      sameSite: 'lax',
+    });
+
+    res.json({ user: result.user });
   } catch (error: any) {
     if (error instanceof ZodError) {
       res.status(400).json({ errors: error.errors });
@@ -33,4 +41,9 @@ export const login = async (req: Request, res: Response) => {
       res.status(500).json({ message: 'Internal Server Error' });
     }
   }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  res.clearCookie('ecommerce_token');
+  res.json({ message: 'LOGOUT SUCCESSFUL' });
 };
