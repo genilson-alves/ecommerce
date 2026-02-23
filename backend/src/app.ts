@@ -2,7 +2,11 @@ import express from 'express';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import userRoutes from './modules/users/user.routes';
-// ...
+import productRoutes from './modules/products/product.routes';
+import orderRoutes from './modules/orders/order.routes';
+import paymentRoutes from './modules/payments/payment.routes';
+import { webhook } from './modules/payments/payment.controller';
+
 const app = express();
 
 app.use(helmet());
