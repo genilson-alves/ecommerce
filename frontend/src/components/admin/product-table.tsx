@@ -57,7 +57,9 @@ export const ProductTable = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["admin-products"],
     queryFn: async () => {
-      const response = await axios.get(`${API_URL}/products`);
+      const response = await axios.get(`${API_URL}/products`, {
+        withCredentials: true,
+      });
       return response.data;
     },
   });

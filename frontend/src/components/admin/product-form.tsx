@@ -25,16 +25,10 @@ export const CreateProductForm = () => {
 
   const onSubmit = async (data: ProductFormData) => {
     try {
-      // Assuming localhost:3000 as backend for consistency
       const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
       
-      // We'd normally get the token from an auth store
-      const token = localStorage.getItem("token");
-
       await axios.post(`${API_URL}/products`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        withCredentials: true,
       });
 
       reset();
