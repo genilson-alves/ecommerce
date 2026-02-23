@@ -1,12 +1,40 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/store";
 import { AdminSidebar } from "./sidebar";
+import { Loader2 } from "lucide-react";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
+  const { isAdmin, user } = useAuth();
+  const router = useRouter();
+  const [authorized, setAuthorized] = useState(false);
+
+  useEffect(() => {
+    // If user is not admin, redirect to login
+    if (!isAdmin()) {
+      router.push("/login");
+    } else {
+      setAuthorized(true);
+    }
+  }, [isAdmin, router]);
+
+  if (!authorized) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-bone text-deep-olive">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="animate-spin text-sage" size={48} />
+          <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-sage">Authenticating Admin Session</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex bg-bone min-h-screen text-deep-olive">
       <AdminSidebar />

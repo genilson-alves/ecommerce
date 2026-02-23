@@ -1,6 +1,38 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+export interface User {
+  id: string;
+  email: string;
+  role: 'USER' | 'ADMIN';
+}
+
+interface AuthStore {
+  user: User | null;
+  token: string | null;
+  setAuth: (user: User, token: string) => void;
+  logout: () => void;
+  isAdmin: () => boolean;
+}
+
+export const useAuth = create<AuthStore>()(
+  persist(
+    (set, get) => ({
+      user: null,
+      token: null,
+      setAuth: (user, token) => set({ user, token }),
+      logout: () => {
+        set({ user: null, token: null });
+        localStorage.removeItem('ecommerce-auth-storage');
+      },
+      isAdmin: () => get().user?.role === 'ADMIN',
+    }),
+    {
+      name: 'ecommerce-auth-storage',
+    }
+  )
+);
+
 export interface CartItem {
   id: string;
   name: string;
