@@ -53,8 +53,8 @@ export const CreateProductForm = () => {
             <label className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage block">PRODUCT NAME</label>
             <input
               {...register("name")}
-              className="w-full bg-bone border-b-2 border-sage p-4 text-xs font-bold tracking-widest uppercase focus:outline-none focus:border-deep-olive transition-colors placeholder:text-sage/30"
-              placeholder="e.g. MONOLITH VASE"
+              className="w-full bg-bone border-b-2 border-sage p-4 text-xs font-bold focus:outline-none focus:border-deep-olive transition-colors placeholder:text-sage/30"
+              placeholder="e.g. Monolith Vase"
             />
             {errors.name && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.name.message}</p>}
           </div>
@@ -65,7 +65,7 @@ export const CreateProductForm = () => {
               type="number"
               step="0.01"
               {...register("price")}
-              className="w-full bg-bone border-b-2 border-sage p-4 text-xs font-bold tracking-widest uppercase focus:outline-none focus:border-deep-olive transition-colors placeholder:text-sage/30"
+              className="w-full bg-bone border-b-2 border-sage p-4 text-xs font-bold focus:outline-none focus:border-deep-olive transition-colors placeholder:text-sage/30"
               placeholder="0.00"
             />
             {errors.price && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.price.message}</p>}
@@ -76,8 +76,8 @@ export const CreateProductForm = () => {
             <textarea
               {...register("description")}
               rows={4}
-              className="w-full bg-bone border border-sage p-4 text-xs font-bold tracking-widest uppercase focus:outline-none focus:border-deep-olive transition-colors placeholder:text-sage/30"
-              placeholder="MINIMALIST ESSENTIAL OBJECT"
+              className="w-full bg-bone border border-sage p-4 text-xs font-bold focus:outline-none focus:border-deep-olive transition-colors placeholder:text-sage/30"
+              placeholder="Minimalist essential object"
             />
           </div>
 
@@ -86,7 +86,7 @@ export const CreateProductForm = () => {
             <input
               type="number"
               {...register("stock")}
-              className="w-full bg-bone border-b-2 border-sage p-4 text-xs font-bold tracking-widest uppercase focus:outline-none focus:border-deep-olive transition-colors placeholder:text-sage/30"
+              className="w-full bg-bone border-b-2 border-sage p-4 text-xs font-bold focus:outline-none focus:border-deep-olive transition-colors placeholder:text-sage/30"
               placeholder="0"
             />
             {errors.stock && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.stock.message}</p>}

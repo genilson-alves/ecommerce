@@ -133,8 +133,8 @@ export const Navbar = () => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="SEARCH COLLECTION..."
-                className="w-full bg-transparent text-4xl md:text-6xl font-black uppercase tracking-tighter placeholder:text-sage/30 focus:outline-none"
+                placeholder="Search collection..."
+                className="w-full bg-transparent text-4xl md:text-6xl font-black focus:outline-none"
               />
               <p className="text-[10px] font-bold text-sage uppercase tracking-[0.4em] mt-4">Press enter to search the database</p>
             </form>

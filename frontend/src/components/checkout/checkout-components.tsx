@@ -45,19 +45,19 @@ export const CheckoutForm = () => {
           <input
             type="text"
             placeholder="FULL NAME"
-            className="w-full bg-bone border border-sage p-4 text-xs font-bold tracking-widest uppercase placeholder:text-sage focus:outline-none focus:border-deep-olive"
+            className="w-full bg-bone border border-sage p-4 text-xs font-bold focus:outline-none focus:border-deep-olive"
             required
           />
           <input
             type="email"
             placeholder="EMAIL ADDRESS"
-            className="w-full bg-bone border border-sage p-4 text-xs font-bold tracking-widest uppercase placeholder:text-sage focus:outline-none focus:border-deep-olive"
+            className="w-full bg-bone border border-sage p-4 text-xs font-bold focus:outline-none focus:border-deep-olive"
             required
           />
           <input
             type="text"
             placeholder="SHIPPING ADDRESS"
-            className="w-full md:col-span-2 bg-bone border border-sage p-4 text-xs font-bold tracking-widest uppercase placeholder:text-sage focus:outline-none focus:border-deep-olive"
+            className="w-full md:col-span-2 bg-bone border border-sage p-4 text-xs font-bold focus:outline-none focus:border-deep-olive"
             required
           />
         </div>

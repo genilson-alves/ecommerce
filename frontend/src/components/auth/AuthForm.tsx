@@ -86,8 +86,8 @@ export const AuthForm = ({ type }: AuthFormProps) => {
             <label className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage">01. IDENTIFICATION</label>
             <input
               {...register("email")}
-              className="w-full bg-bone border border-sage p-4 text-xs font-bold tracking-widest uppercase focus:outline-none focus:border-deep-olive transition-colors placeholder:text-sage/30"
-              placeholder="EMAIL@DOMAIN.COM"
+              className="w-full bg-bone border border-sage p-4 text-xs font-bold focus:outline-none focus:border-deep-olive transition-colors placeholder:text-sage/30"
+              placeholder="email@domain.com"
             />
             {errors.email && <p className="text-[10px] text-red-500 font-bold uppercase italic mt-1">{errors.email.message}</p>}
           </div>
@@ -98,7 +98,7 @@ export const AuthForm = ({ type }: AuthFormProps) => {
               <input
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
-                className="w-full bg-bone border border-sage p-4 text-xs font-bold tracking-widest uppercase focus:outline-none focus:border-deep-olive transition-colors placeholder:text-sage/30 pr-12"
+                className="w-full bg-bone border border-sage p-4 text-xs font-bold focus:outline-none focus:border-deep-olive transition-colors placeholder:text-sage/30 pr-12"
                 placeholder="********"
               />
               <button
