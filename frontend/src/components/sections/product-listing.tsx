@@ -5,14 +5,20 @@ import axios from "axios";
 import { ProductCard } from "@/components/ui/product-card";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, RefreshCw } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
 
 export const ProductListing = () => {
+  const searchParams = useSearchParams();
+  const nameQuery = searchParams.get("name") || "";
+
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", nameQuery],
     queryFn: async () => {
-      const response = await axios.get(`${API_URL}/products`);
+      const response = await axios.get(`${API_URL}/products`, {
+        params: { name: nameQuery },
+      });
       return response.data;
     },
   });

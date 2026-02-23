@@ -18,8 +18,10 @@ export const Hero = () => {
             Built for those who value quality over quantity.
           </p>
           <div className="flex gap-4">
-            <PrimaryButton>SHOP THE DROPS</PrimaryButton>
-            <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest hover:text-sage transition-colors">
+            <PrimaryButton className="hover:bg-sage hover:text-bone transition-all active:scale-95 shadow-lg shadow-deep-olive/10 hover:shadow-sage/20">
+              SHOP THE DROPS
+            </PrimaryButton>
+            <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest hover:text-sage transition-all hover:translate-x-1 active:scale-95">
               Our Ethos <ArrowUpRight size={16} />
             </button>
           </div>
