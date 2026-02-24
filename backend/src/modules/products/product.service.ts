@@ -9,6 +9,19 @@ export const createProduct = async (data: CreateProductInput) => {
   });
 };
 
+export const updateProduct = async (id: string, data: any) => {
+  return await prisma.product.update({
+    where: { id },
+    data,
+  });
+};
+
+export const getProductById = async (id: string) => {
+  return await prisma.product.findUnique({
+    where: { id },
+  });
+};
+
 export const getProducts = async (query: ProductQueryInput) => {
   const cacheKey = `products:${JSON.stringify(query)}`;
   const cachedData = await getCache(cacheKey);
@@ -17,7 +30,7 @@ export const getProducts = async (query: ProductQueryInput) => {
     return cachedData;
   }
 
-  const { page = 1, limit = 10, name, minPrice, maxPrice } = query;
+  const { page = 1, limit = 10, name, category, minPrice, maxPrice, sortBy, featured } = query;
   const skip = (page - 1) * limit;
 
   const where: Prisma.ProductWhereInput = {};
@@ -29,6 +42,13 @@ export const getProducts = async (query: ProductQueryInput) => {
     };
   }
 
+  if (category) {
+    where.category = {
+      equals: category,
+      mode: 'insensitive',
+    };
+  }
+
   if (minPrice !== undefined || maxPrice !== undefined) {
     where.price = {
       gte: minPrice,
@@ -36,12 +56,23 @@ export const getProducts = async (query: ProductQueryInput) => {
     };
   }
 
+  let orderBy: Prisma.ProductOrderByWithRelationInput = { createdAt: 'desc' };
+
+  if (featured) {
+    orderBy = { salesCount: 'desc' };
+  } else {
+    if (sortBy === 'price_asc') orderBy = { price: 'asc' };
+    if (sortBy === 'price_desc') orderBy = { price: 'desc' };
+    if (sortBy === 'oldest') orderBy = { createdAt: 'asc' };
+    if (sortBy === 'newest') orderBy = { createdAt: 'desc' };
+  }
+
   const [products, total] = await Promise.all([
     prisma.product.findMany({
       where,
       skip,
       take: limit,
-      orderBy: { createdAt: 'desc' },
+      orderBy,
     }),
     prisma.product.count({ where }),
   ]);

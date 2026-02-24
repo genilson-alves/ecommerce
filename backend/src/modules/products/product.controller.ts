@@ -30,3 +30,29 @@ export const getAll = async (req: Request, res: Response) => {
     }
   }
 };
+
+export const getOne = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const product = await productService.getProductById(id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+export const update = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const data = createProductSchema.partial().parse(req.body);
+    const product = await productService.updateProduct(id, data);
+    res.json(product);
+  } catch (error: any) {
+    if (error instanceof ZodError) {
+      res.status(400).json({ errors: error.errors });
+    } else {
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  }
+};

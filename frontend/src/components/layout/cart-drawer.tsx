@@ -1,6 +1,7 @@
 "use client";
 
 import { useCart } from "@/lib/store";
+import { useAuthStore } from "@/lib/auth-store";
 import {
   Sheet,
   SheetContent,
@@ -8,18 +9,47 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ShoppingCart, Plus, Minus, Trash2 } from "lucide-react";
+import { ShoppingCart, Plus, Minus, Trash2, Loader2 } from "lucide-react";
 import { PrimaryButton } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { toast } from "sonner";
 
 export const CartDrawer = () => {
-  const { items, removeItem, increment, decrement, getTotal, getItemCount } = useCart();
+  const { items, removeItem, increment, decrement, getTotal, getItemCount, clearCart } = useCart();
+  const { user } = useAuthStore();
   const [mounted, setMounted] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const router = useRouter();
 
-  // Prevent hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleCheckout = async () => {
+    if (!user) {
+      toast.error("PLEASE AUTHENTICATE TO PROCEED");
+      router.push("/login");
+      return;
+    }
+
+    setIsCheckingOut(true);
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+      await axios.post(`${API_URL}/orders`, {
+        items: items.map(i => ({ productId: i.id, quantity: i.quantity }))
+      }, { withCredentials: true });
+
+      toast.success("ORDER SYNCHRONIZED SUCCESSFULLY");
+      clearCart();
+      router.push("/orders");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "CHECKOUT SEQUENCE FAILED");
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
 
   if (!mounted) return null;
 
@@ -103,8 +133,16 @@ export const CartDrawer = () => {
             <p className="text-[10px] text-sage font-bold uppercase tracking-widest leading-relaxed">
               Shipping and taxes calculated at checkout.
             </p>
-            <PrimaryButton className="w-full text-xs tracking-widest uppercase font-black py-4">
-              Proceed to Checkout
+            <PrimaryButton 
+              onClick={handleCheckout}
+              disabled={isCheckingOut}
+              className="w-full text-xs tracking-widest uppercase font-black py-4 flex items-center justify-center gap-3"
+            >
+              {isCheckingOut ? (
+                <><Loader2 className="animate-spin" size={16} /> INITIALIZING...</>
+              ) : (
+                "Proceed to Checkout"
+              )}
             </PrimaryButton>
           </div>
         )}

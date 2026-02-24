@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Search, User, X, LogOut, UserCircle } from "lucide-react";
+import { Menu, Search, User, X, LogOut, UserCircle, Package, ShoppingBag } from "lucide-react";
 import { CartDrawer } from "./cart-drawer";
 import { useAuthStore } from "@/lib/auth-store";
 import { useRouter } from "next/navigation";
@@ -14,6 +14,17 @@ export const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearchOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -30,7 +41,7 @@ export const Navbar = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/?name=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/shop?name=${encodeURIComponent(searchQuery.trim())}`);
       setIsSearchOpen(false);
       setSearchQuery("");
     }
@@ -61,28 +72,32 @@ export const Navbar = () => {
         <div className="flex items-center gap-6">
           <button 
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="hover:text-sage transition-all hover:scale-110 active:scale-95"
+            className="hover:text-sage transition-all hover:scale-110 active:scale-95 p-2 rounded-full hover:bg-clay/10"
           >
             {isSearchOpen ? <X size={20} /> : <Search size={20} />}
           </button>
           
-          <CartDrawer />
+          <div className="hover:scale-110 transition-transform">
+            <CartDrawer />
+          </div>
 
           <div className="h-4 w-px bg-sage/30 hidden sm:block" />
 
           {user ? (
             <div className="flex items-center gap-4 group relative">
-              <button className="flex items-center gap-2 hover:text-sage transition-colors">
+              <button className="flex items-center gap-2 hover:text-sage transition-all hover:scale-110 p-2 rounded-full hover:bg-clay/10">
                 <User size={20} />
               </button>
               
-              {/* Dropdown Menu */}
               <div className="absolute top-full right-0 mt-2 w-48 bg-bone border border-sage opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-200 z-50">
                 <div className="p-4 border-b border-sage bg-clay/10">
                   <p className="text-[10px] font-bold text-sage uppercase tracking-widest truncate">{user.email}</p>
                 </div>
                 <Link href="/profile" className="flex items-center gap-3 px-4 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-clay/20 transition-colors">
                   <UserCircle size={14} /> Profile
+                </Link>
+                <Link href="/orders" className="flex items-center gap-3 px-4 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-clay/20 transition-colors border-t border-sage/10">
+                  <ShoppingBag size={14} /> My Orders
                 </Link>
                 {user.role === 'ADMIN' && (
                   <Link href="/admin" className="flex items-center gap-3 px-4 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-clay/20 transition-colors border-t border-sage/10">
@@ -101,7 +116,7 @@ export const Navbar = () => {
             <div className="hidden sm:flex items-center gap-4">
               <Link 
                 href="/login" 
-                className="text-[10px] font-bold uppercase tracking-widest hover:text-sage transition-colors"
+                className="text-[10px] font-bold uppercase tracking-widest hover:text-sage transition-colors p-2"
               >
                 Login
               </Link>
@@ -118,14 +133,14 @@ export const Navbar = () => {
         </div>
       </div>
 
-      {/* Search Overlay */}
       <AnimatePresence>
         {isSearchOpen && (
           <motion.div 
+            ref={searchRef}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden bg-bone border-b border-sage"
+            className="overflow-hidden bg-bone border-b border-sage shadow-2xl shadow-deep-olive/10"
           >
             <form onSubmit={handleSearch} className="max-w-7xl mx-auto px-6 py-8">
               <input 

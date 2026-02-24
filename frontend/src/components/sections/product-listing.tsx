@@ -9,15 +9,24 @@ import { useSearchParams } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
 
-export const ProductListing = () => {
+interface ProductListingProps {
+  featured?: boolean;
+  limit?: number;
+}
+
+export const ProductListing = ({ featured = false, limit }: ProductListingProps) => {
   const searchParams = useSearchParams();
   const nameQuery = searchParams.get("name") || "";
 
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
-    queryKey: ["products", nameQuery],
+    queryKey: ["products", nameQuery, featured, limit],
     queryFn: async () => {
       const response = await axios.get(`${API_URL}/products`, {
-        params: { name: nameQuery },
+        params: { 
+          name: nameQuery,
+          featured: featured ? 'true' : undefined,
+          limit: limit || 10
+        },
       });
       return response.data;
     },

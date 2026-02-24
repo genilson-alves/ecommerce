@@ -25,3 +25,15 @@ export const create = async (req: Request, res: Response) => {
     }
   }
 };
+
+export const getAll = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const orders = await orderService.getUserOrders(userId);
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};

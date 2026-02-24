@@ -2,12 +2,11 @@ import prisma from '../../config/db';
 import { CreateOrderInput } from './order.schema';
 
 export const createOrder = async (userId: string, data: CreateOrderInput) => {
-  return await prisma.$transaction(async (tx) => {
+  const order = await prisma.$transaction(async (tx) => {
     let totalAmount = 0;
     const orderItemsData = [];
 
     for (const item of data.items) {
-      // 1. Check stock and get price (using 'update' with a 'where' check for atomic stock decrement)
       const product = await tx.product.findUnique({
         where: { id: item.productId },
       });
@@ -20,12 +19,14 @@ export const createOrder = async (userId: string, data: CreateOrderInput) => {
         throw new Error(`Insufficient stock for product: ${product.name}`);
       }
 
-      // 2. Subtract stock
       await tx.product.update({
         where: { id: item.productId },
         data: {
           stock: {
             decrement: item.quantity,
+          },
+          salesCount: {
+            increment: item.quantity,
           },
         },
       });
@@ -40,12 +41,11 @@ export const createOrder = async (userId: string, data: CreateOrderInput) => {
       });
     }
 
-    // 3. Create Order
-    const order = await tx.order.create({
+    return await tx.order.create({
       data: {
         userId,
         totalAmount,
-        status: 'PENDING',
+        status: 'PAID', // Start as PAID for mock checkout
         items: {
           create: orderItemsData,
         },
@@ -54,7 +54,48 @@ export const createOrder = async (userId: string, data: CreateOrderInput) => {
         items: true,
       },
     });
+  });
 
-    return order;
+  // --- Mock Lifecycle Transitions ---
+  // In a real app, this would be handled by a worker (BullMQ) or Stripe Webhooks.
+  
+  // 30 Seconds -> PREPARING
+  setTimeout(async () => {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { status: 'PREPARING' },
+    }).catch(console.error);
+  }, 30000);
+
+  // 2 Minutes -> SHIPPED
+  setTimeout(async () => {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { status: 'SHIPPED' },
+    }).catch(console.error);
+  }, 120000);
+
+  // 5 Minutes -> DELIVERED
+  setTimeout(async () => {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { status: 'DELIVERED' },
+    }).catch(console.error);
+  }, 300000);
+
+  return order;
+};
+
+export const getUserOrders = async (userId: string) => {
+  return await prisma.order.findMany({
+    where: { userId },
+    include: {
+      items: {
+        include: {
+          product: true
+        }
+      }
+    },
+    orderBy: { createdAt: 'desc' },
   });
 };
