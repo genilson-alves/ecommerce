@@ -36,7 +36,7 @@ export const CartDrawer = () => {
 
     setIsCheckingOut(true);
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
       await axios.post(`${API_URL}/orders`, {
         items: items.map(i => ({ productId: i.id, quantity: i.quantity }))
       }, { withCredentials: true });

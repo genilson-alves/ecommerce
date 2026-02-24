@@ -52,7 +52,7 @@ const columns = [
 ];
 
 export const ProductTable = () => {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["admin-products"],

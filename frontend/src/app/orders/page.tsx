@@ -8,7 +8,7 @@ import { useAuthStore } from "@/lib/auth-store";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 const statusConfig = {
   PENDING: { icon: Clock, color: "text-clay", bg: "bg-clay/10" },
@@ -27,13 +27,13 @@ export default function OrdersPage() {
     if (!user) router.push("/login");
   }, [user, router]);
 
-  const { data: orders, isLoading, refetch } = useQuery({
+  const { data: orders, isLoading, isError } = useQuery({
     queryKey: ["user-orders"],
     queryFn: async () => {
       const response = await axios.get(`${API_URL}/orders`, { withCredentials: true });
       return response.data;
     },
-    refetchInterval: 10000, // Poll every 10 seconds to show "real-time" status changes
+    refetchInterval: 10000,
     enabled: !!user,
   });
 
@@ -56,10 +56,10 @@ export default function OrdersPage() {
         <div className="h-40 flex items-center justify-center border border-sage border-dashed italic text-sage uppercase text-[10px] font-bold tracking-widest">
           Syncing order logs...
         </div>
-      ) : orders?.length === 0 ? (
+      ) : isError || !orders || !Array.isArray(orders) || orders.length === 0 ? (
         <div className="text-center py-40 border border-sage border-dashed">
            <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-sage italic mb-8">No transaction records found.</p>
-           <a href="/shop" className="bg-deep-olive text-bone px-8 py-4 text-xs font-bold uppercase tracking-widest hover:scale-95 transition-transform inline-block">Start Shopping</a>
+           <a href="/shop" className="bg-deep-olive text-bone px-8 py-4 text-xs font-bold uppercase tracking-widest hover:scale-95 transition-transform inline-block text-center">Start Shopping</a>
         </div>
       ) : (
         <div className="space-y-12">
@@ -88,7 +88,7 @@ export default function OrdersPage() {
                       <div key={item.id} className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-deep-olive">
                         <div className="flex gap-6 items-center">
                           <span className="text-sage italic">x{item.quantity}</span>
-                          <span>{item.product.name}</span>
+                          <span>{item.product?.name || "Product Archive"}</span>
                         </div>
                         <span>${(item.priceAtPurchase * item.quantity).toFixed(2)}</span>
                       </div>

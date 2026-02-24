@@ -37,7 +37,7 @@ export const AuthForm = ({ type }: AuthFormProps) => {
 
   const onSubmit = async (data: AuthFormData) => {
     setLoading(true);
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
     const endpoint = type === "login" ? "/auth/login" : "/auth/register";
 
     try {

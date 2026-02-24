@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, SlidersHorizontal } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 const categories = ["Furniture", "Accessories", "Lighting", "Textiles", "Objects"];
 

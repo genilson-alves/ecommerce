@@ -22,27 +22,10 @@ export const ProductCard = ({ product }: { product: Product }) => {
   const { user } = useAuthStore();
   const router = useRouter();
 
-  const handleBuyNow = async (e: React.MouseEvent) => {
+  const handleBuyNow = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    if (!user) {
-      toast.error("PLEASE LOGIN TO PURCHASE");
-      router.push("/login");
-      return;
-    }
-
-    try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
-      await axios.post(`${API_URL}/orders`, {
-        items: [{ productId: product.id, quantity: 1 }]
-      }, { withCredentials: true });
-
-      toast.success("ORDER PLACED SUCCESSFULLY");
-      router.push("/orders");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "PURCHASE FAILED");
-    }
+    router.push(`/shop/${product.id}?buy=true`);
   };
 
   const handleAddToCart = (e: React.MouseEvent) => {

@@ -28,7 +28,7 @@ export const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
       await fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" });
       logout();
       toast.success("Logged out successfully");
