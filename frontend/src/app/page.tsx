@@ -11,7 +11,6 @@ export default function Home() {
           <ProductListing featured={true} limit={4} />
         </div>
       </section>
-      <ProductListing />
     </div>
   );
 }
