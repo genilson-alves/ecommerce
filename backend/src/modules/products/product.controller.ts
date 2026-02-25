@@ -56,3 +56,13 @@ export const update = async (req: Request, res: Response) => {
     }
   }
 };
+
+export const remove = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    await productService.deleteProduct(id);
+    res.json({ message: 'Product deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};

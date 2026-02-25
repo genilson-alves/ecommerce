@@ -22,4 +22,11 @@ router.put(
   update
 );
 
+router.delete(
+  '/:id',
+  authenticateToken,
+  requireRole('ADMIN'),
+  remove
+);
+
 export default router;

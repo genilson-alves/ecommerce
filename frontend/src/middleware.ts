@@ -15,7 +15,7 @@ export function middleware(request: NextRequest) {
   }
 
   // Protect Checkout
-  if (pathname.startsWith('/checkout')) {
+  if (pathname.startsWith('/checkout') || pathname.startsWith('/user')) {
     if (!token) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
@@ -30,5 +30,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/checkout/:path*', '/login', '/register'],
+  matcher: ['/admin/:path*', '/checkout/:path*', '/user/:path*', '/login', '/register'],
 };

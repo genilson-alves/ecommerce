@@ -16,6 +16,12 @@ export const updateProduct = async (id: string, data: any) => {
   });
 };
 
+export const deleteProduct = async (id: string) => {
+  return await prisma.product.delete({
+    where: { id },
+  });
+};
+
 export const getProductById = async (id: string) => {
   return await prisma.product.findUnique({
     where: { id },

@@ -10,21 +10,28 @@ import { useSearchParams } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
-const categories = ["Furniture", "Accessories", "Lighting", "Textiles", "Objects"];
-
 export default function ShopPage() {
   const searchParams = useSearchParams();
   const nameQuery = searchParams.get("name") || "";
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [priceRange, setPriceRange] = useState<number | null>(null); // null means None/Max
+  const [priceRange, setPriceRange] = useState<number | null>(null);
   const [sortBy, setSortBy] = useState("newest");
+
+  // Fetch unique categories from products
+  const { data: allProductsData } = useQuery({
+    queryKey: ["all-products-for-categories"],
+    queryFn: async () => {
+      const response = await axios.get(`${API_URL}/products`);
+      return response.data.data;
+    }
+  });
+
+  const categories = Array.from(new Set(allProductsData?.map((p: any) => p.category))).filter(Boolean) as string[];
 
   const { data, isLoading } = useQuery({
     queryKey: ["products", selectedCategory, priceRange, sortBy, nameQuery],
     queryFn: async () => {
-      const params: any = {
-        sortBy,
-      };
+      const params: any = { sortBy };
       if (selectedCategory) params.category = selectedCategory;
       if (priceRange) params.maxPrice = priceRange;
       if (nameQuery) params.name = nameQuery;
@@ -37,9 +44,8 @@ export default function ShopPage() {
   const products = data?.data || [];
 
   return (
-    <div className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+    <div className="pt-40 pb-20 px-6 max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row gap-16">
-        {/* Sidebar Filters */}
         <aside className="w-full md:w-64 space-y-12">
           <div>
             <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage mb-8 border-b border-sage pb-4">
@@ -48,16 +54,18 @@ export default function ShopPage() {
             <div className="space-y-4">
               <button 
                 onClick={() => setSelectedCategory(null)}
-                className={`block text-xs font-bold uppercase tracking-widest transition-colors ${!selectedCategory ? 'text-deep-olive underline text-left' : 'text-sage hover:text-deep-olive text-left'}`}
+                className={`block text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:translate-x-1 group text-left ${!selectedCategory ? 'text-deep-olive' : 'text-sage hover:text-deep-olive'}`}
               >
+                <span className={`inline-block w-2 h-px bg-deep-olive mr-2 transition-all ${!selectedCategory ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`} />
                 All Objects
               </button>
               {categories.map((cat) => (
                 <button 
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`block text-xs font-bold uppercase tracking-widest transition-colors ${selectedCategory === cat ? 'text-deep-olive underline text-left' : 'text-sage hover:text-deep-olive text-left'}`}
+                  className={`block text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:translate-x-1 group text-left ${selectedCategory === cat ? 'text-deep-olive' : 'text-sage hover:text-deep-olive'}`}
                 >
+                  <span className={`inline-block w-2 h-px bg-deep-olive mr-2 transition-all ${selectedCategory === cat ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`} />
                   {cat}
                 </button>
               ))}
@@ -79,11 +87,11 @@ export default function ShopPage() {
                   const val = parseInt(e.target.value);
                   setPriceRange(val > 2000 ? null : val);
                 }}
-                className="w-full accent-deep-olive bg-sage/20 h-px appearance-none cursor-pointer"
+                className="w-full accent-deep-olive bg-sage h-px appearance-none cursor-pointer"
               />
               <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-sage">
                 <span>$0</span>
-                <span>{priceRange ? `UP TO $${priceRange}` : "NONE / NO LIMIT"}</span>
+                <span className={priceRange ? 'text-deep-olive' : ''}>{priceRange ? `UP TO $${priceRange}` : "NONE / NO LIMIT"}</span>
               </div>
             </div>
           </div>
@@ -95,7 +103,7 @@ export default function ShopPage() {
             <select 
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full bg-transparent border border-sage p-3 text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-deep-olive"
+              className="w-full bg-transparent border border-sage p-3 text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-deep-olive hover:bg-clay/10 transition-colors cursor-pointer"
             >
               <option value="newest">Newest Arrivals</option>
               <option value="price_asc">Price: Low to High</option>
@@ -105,7 +113,6 @@ export default function ShopPage() {
           </div>
         </aside>
 
-        {/* Product Grid */}
         <main className="flex-1">
           <header className="flex justify-between items-end mb-12 border-b border-sage pb-8">
             <div>

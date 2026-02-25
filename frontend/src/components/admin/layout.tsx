@@ -38,7 +38,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
   return (
     <div className="flex bg-bone min-h-screen text-deep-olive">
       <AdminSidebar />
-      <main className="flex-1 p-12 overflow-y-auto">
+      <main className="flex-1 p-12 overflow-y-auto pt-32">
         {children}
       </main>
     </div>

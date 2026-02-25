@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bone: #E3E7D3;
-  --color-clay: #BDC2BF;
-  --color-sage: #989C94;
-  --color-deep-olive: #25291C;
-  --color-sulfur: #E6E49F;
+  --color-bone: #FAF9F6;
+  --color-clay: #EBEBEB;
+  --color-sage: #D1D1D1;
+  --color-deep-olive: #121212;
+  --color-sulfur: #3E5C76; /* Muted Navy Accent */
   --font-geist-sans: var(--font-geist-sans);
 }
 
@@ -13,4 +13,23 @@
   body {
     @apply bg-bone text-deep-olive antialiased font-sans;
   }
+}
+
+.hover-underline {
+  position: relative;
+}
+
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+}
+
+.hover-underline:hover::after {
+  width: 100%;
 }

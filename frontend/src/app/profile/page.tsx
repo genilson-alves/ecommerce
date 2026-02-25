@@ -40,11 +40,11 @@ export default function ProfilePage() {
 
         <div className="md:col-span-8">
            <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-sage border border-sage">
-              <div className="bg-bone p-10 group cursor-pointer transition-colors hover:bg-sulfur/10">
+              <Link href="/user/orders" className="bg-bone p-10 group cursor-pointer transition-colors hover:bg-sulfur/10 block">
                  <Package size={24} className="mb-6 text-sage group-hover:text-deep-olive transition-colors" />
                  <h3 className="text-xl font-black uppercase tracking-tighter mb-2">My Orders</h3>
                  <p className="text-[10px] font-bold text-sage uppercase tracking-widest">View tracking and history</p>
-              </div>
+              </Link>
               <div className="bg-bone p-10 group cursor-pointer transition-colors hover:bg-sulfur/10">
                  <Settings size={24} className="mb-6 text-sage group-hover:text-deep-olive transition-colors" />
                  <h3 className="text-xl font-black uppercase tracking-tighter mb-2">Settings</h3>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import {
   createColumnHelper,
@@ -8,51 +8,25 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Loader2, ArrowUpRight, Package, Trash2 } from "lucide-react";
+import { Loader2, Edit2, Package, Trash2, ExternalLink } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface Product {
   id: string;
   name: string;
   price: number;
   stock: number;
+  category: string;
   updatedAt: string;
 }
 
 const columnHelper = createColumnHelper<Product>();
 
-const columns = [
-  columnHelper.accessor("name", {
-    header: () => <span className="text-[10px] font-bold tracking-[0.3em] text-sage">NAME</span>,
-    cell: (info) => <span className="text-xs font-black uppercase tracking-tighter italic">{info.getValue()}</span>,
-  }),
-  columnHelper.accessor("price", {
-    header: () => <span className="text-[10px] font-bold tracking-[0.3em] text-sage">PRICE</span>,
-    cell: (info) => <span className="text-xs font-bold tabular-nums">${Number(info.getValue()).toFixed(2)}</span>,
-  }),
-  columnHelper.accessor("stock", {
-    header: () => <span className="text-[10px] font-bold tracking-[0.3em] text-sage">STOCK</span>,
-    cell: (info) => (
-      <div className="flex items-center gap-2">
-        <span className={`text-xs font-bold ${info.getValue() < 10 ? 'text-red-500' : 'text-deep-olive'}`}>
-          {info.getValue()}
-        </span>
-        {info.getValue() < 10 && <span className="text-[8px] font-black uppercase tracking-widest text-red-500 bg-red-50 px-1 py-0.5 border border-red-200">LOW</span>}
-      </div>
-    ),
-  }),
-  columnHelper.accessor("id", {
-    header: () => <span className="text-[10px] font-bold tracking-[0.3em] text-sage">ACTIONS</span>,
-    cell: (info) => (
-      <div className="flex gap-4">
-        <button className="text-sage hover:text-deep-olive transition-colors"><ArrowUpRight size={16} /></button>
-        <button className="text-sage hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
-      </div>
-    ),
-  }),
-];
-
 export const ProductTable = () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const queryClient = useQueryClient();
+  const router = useRouter();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["admin-products"],
@@ -63,6 +37,77 @@ export const ProductTable = () => {
       return response.data;
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return axios.delete(`${API_URL}/products/${id}`, { withCredentials: true });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+      toast.success("PRODUCT REMOVED FROM INVENTORY");
+    },
+    onError: () => {
+      toast.error("DELETION FAILED");
+    }
+  });
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("ARE YOU SURE YOU WANT TO REMOVE THIS ITEM?")) {
+      deleteMutation.mutate(id);
+    }
+  };
+
+  const columns = [
+    columnHelper.accessor("name", {
+      header: () => <span className="text-[9px] font-black tracking-[0.3em] text-sage uppercase">NAME</span>,
+      cell: (info) => (
+        <div className="flex flex-col">
+          <span className="text-xs font-black uppercase tracking-tighter italic">{info.getValue()}</span>
+          <span className="text-[8px] font-bold text-sage">{info.row.original.category}</span>
+        </div>
+      ),
+    }),
+    columnHelper.accessor("price", {
+      header: () => <span className="text-[9px] font-black tracking-[0.3em] text-sage uppercase">PRICE</span>,
+      cell: (info) => <span className="text-xs font-bold tabular-nums">${Number(info.getValue()).toFixed(2)}</span>,
+    }),
+    columnHelper.accessor("stock", {
+      header: () => <span className="text-[9px] font-black tracking-[0.3em] text-sage uppercase">STOCK</span>,
+      cell: (info) => (
+        <div className="flex items-center gap-2">
+          <span className={`text-xs font-bold ${info.getValue() < 10 ? 'text-red-500' : 'text-deep-olive'}`}>
+            {info.getValue()}
+          </span>
+          {info.getValue() < 10 && <span className="text-[8px] font-black uppercase tracking-widest text-red-500 bg-red-50 px-1 py-0.5 border border-red-200">LOW</span>}
+        </div>
+      ),
+    }),
+    columnHelper.accessor("id", {
+      header: () => <span className="text-[9px] font-black tracking-[0.3em] text-sage uppercase">ACTIONS</span>,
+      cell: (info) => (
+        <div className="flex gap-3">
+          <button 
+            onClick={() => router.push(`/shop/${info.getValue()}`)}
+            className="p-2 text-sage hover:text-deep-olive hover:bg-clay transition-all rounded-lg"
+          >
+            <Edit2 size={14} />
+          </button>
+          <button 
+            onClick={() => handleDelete(info.getValue())}
+            className="p-2 text-sage hover:text-red-500 hover:bg-red-50 transition-all rounded-lg"
+          >
+            <Trash2 size={14} />
+          </button>
+          <button 
+            onClick={() => router.push(`/shop/${info.getValue()}`)}
+            className="p-2 text-sage hover:text-sulfur transition-all rounded-lg"
+          >
+            <ExternalLink size={14} />
+          </button>
+        </div>
+      ),
+    }),
+  ];
 
   const products = data?.data || [];
 
@@ -115,7 +160,7 @@ export const ProductTable = () => {
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border-b border-sage/30 last:border-0 hover:bg-clay/5 transition-colors">
+              <tr key={row.id} className="border-b border-sage/30 last:border-0 hover:bg-clay/10 transition-colors">
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="py-6 px-4 first:pl-0">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

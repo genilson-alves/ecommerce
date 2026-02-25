@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Search, User, X, LogOut, UserCircle, Package, ShoppingBag } from "lucide-react";
+import { Menu, Search, User, X, LogOut, UserCircle, ShoppingBag, LayoutDashboard } from "lucide-react";
 import { CartDrawer } from "./cart-drawer";
 import { useAuthStore } from "@/lib/auth-store";
 import { useRouter } from "next/navigation";
@@ -31,10 +31,10 @@ export const Navbar = () => {
       const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
       await fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" });
       logout();
-      toast.success("Logged out successfully");
+      toast.success("LOGGED OUT SUCCESSFULLY");
       router.push("/");
     } catch (error) {
-      toast.error("Logout failed");
+      toast.error("LOGOUT FAILED");
     }
   };
 
@@ -48,88 +48,79 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-bone border-b border-sage transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-black tracking-tighter hover:scale-[0.98] transition-transform">
-          ECOMMERCE
+    <nav className="fixed top-0 w-full z-50 bg-bone border-b border-sage h-20 flex items-center">
+      <div className="max-w-7xl mx-auto px-6 w-full flex items-center justify-between">
+        <Link href="/" className="text-2xl font-black tracking-tighter hover:scale-[0.98] transition-transform uppercase">
+          ecommerce
         </Link>
         
-        <div className="hidden md:flex items-center gap-10 text-xs font-bold tracking-widest uppercase">
-          <Link href="/shop" className="hover:text-sage transition-colors relative group">
-            Shop
-            <span className="absolute -bottom-1 left-0 w-0 h-px bg-sage transition-all group-hover:w-full"></span>
-          </Link>
-          <Link href="/about" className="hover:text-sage transition-colors relative group">
-            About
-            <span className="absolute -bottom-1 left-0 w-0 h-px bg-sage transition-all group-hover:w-full"></span>
-          </Link>
-          <Link href="/journal" className="hover:text-sage transition-colors relative group">
-            Journal
-            <span className="absolute -bottom-1 left-0 w-0 h-px bg-sage transition-all group-hover:w-full"></span>
-          </Link>
+        <div className="hidden md:flex items-center gap-10 text-[10px] font-bold tracking-[0.3em] uppercase text-sage">
+          <Link href="/shop" className="hover:text-deep-olive transition-colors hover-underline">Shop</Link>
+          <Link href="/about" className="hover:text-deep-olive transition-colors hover-underline">About</Link>
+          <Link href="/journal" className="hover:text-deep-olive transition-colors hover-underline">Journal</Link>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2">
           <button 
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="hover:text-sage transition-all hover:scale-110 active:scale-95 p-2 rounded-full hover:bg-clay/10"
+            className="p-3 text-deep-olive hover:bg-clay transition-all rounded-full"
           >
-            {isSearchOpen ? <X size={20} /> : <Search size={20} />}
+            {isSearchOpen ? <X size={18} /> : <Search size={18} />}
           </button>
           
-          <div className="hover:scale-110 transition-transform">
+          <div className="p-1">
             <CartDrawer />
           </div>
 
-          <div className="h-4 w-px bg-sage/30 hidden sm:block" />
+          <div className="h-4 w-px bg-sage mx-2" />
 
           {user ? (
-            <div className="flex items-center gap-4 group relative">
-              <button className="flex items-center gap-2 hover:text-sage transition-all hover:scale-110 p-2 rounded-full hover:bg-clay/10">
-                <User size={20} />
+            <div className="flex items-center group relative">
+              <button className="p-3 text-deep-olive hover:bg-clay transition-all rounded-full">
+                <User size={18} />
               </button>
               
-              <div className="absolute top-full right-0 mt-2 w-48 bg-bone border border-sage opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-200 z-50">
-                <div className="p-4 border-b border-sage bg-clay/10">
-                  <p className="text-[10px] font-bold text-sage uppercase tracking-widest truncate">{user.email}</p>
+              <div className="absolute top-full right-0 mt-2 w-56 bg-bone border border-sage opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-200 z-50">
+                <div className="p-5 border-b border-sage bg-clay/30">
+                  <p className="text-[9px] font-black text-deep-olive uppercase tracking-[0.2em] truncate opacity-50">{user.email}</p>
                 </div>
-                <Link href="/profile" className="flex items-center gap-3 px-4 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-clay/20 transition-colors">
+                <Link href="/profile" className="flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-clay transition-colors">
                   <UserCircle size={14} /> Profile
                 </Link>
-                <Link href="/orders" className="flex items-center gap-3 px-4 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-clay/20 transition-colors border-t border-sage/10">
+                <Link href="/user/orders" className="flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-clay transition-colors border-t border-sage/50">
                   <ShoppingBag size={14} /> My Orders
                 </Link>
                 {user.role === 'ADMIN' && (
-                  <Link href="/admin" className="flex items-center gap-3 px-4 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-clay/20 transition-colors border-t border-sage/10">
-                    Admin Panel
+                  <Link href="/admin" className="flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-clay transition-colors border-t border-sage/50">
+                    <LayoutDashboard size={14} /> Admin Panel
                   </Link>
                 )}
                 <button 
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 transition-colors border-t border-sage/10"
+                  className="w-full flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-red-600 hover:bg-red-50 transition-colors border-t border-sage/50"
                 >
-                  <LogOut size={14} /> Logout
+                  <LogOut size={14} /> Logout Session
                 </button>
               </div>
             </div>
           ) : (
-            <div className="hidden sm:flex items-center gap-4">
+            <div className="flex items-center gap-4 ml-2">
               <Link 
                 href="/login" 
-                className="text-[10px] font-bold uppercase tracking-widest hover:text-sage transition-colors p-2"
+                className="text-[10px] font-bold uppercase tracking-widest text-deep-olive hover:text-sulfur transition-colors"
               >
                 Login
               </Link>
               <Link 
                 href="/register" 
-                className="text-[10px] font-bold uppercase tracking-widest bg-deep-olive text-bone px-4 py-2 hover:scale-95 transition-transform"
+                className="text-[10px] font-bold uppercase tracking-widest bg-deep-olive text-bone px-6 py-3 hover:bg-black transition-all active:scale-95"
               >
                 Register
               </Link>
             </div>
           )}
           
-          <button className="md:hidden hover:text-sage transition-colors"><Menu size={20} /></button>
+          <button className="md:hidden p-3 text-deep-olive hover:bg-clay rounded-full"><Menu size={18} /></button>
         </div>
       </div>
 
@@ -140,18 +131,20 @@ export const Navbar = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden bg-bone border-b border-sage shadow-2xl shadow-deep-olive/10"
+            className="absolute top-20 left-0 w-full overflow-hidden bg-bone border-b border-sage z-40"
           >
-            <form onSubmit={handleSearch} className="max-w-7xl mx-auto px-6 py-8">
+            <form onSubmit={handleSearch} className="max-w-7xl mx-auto px-6 py-12">
               <input 
                 autoFocus
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search collection..."
-                className="w-full bg-transparent text-4xl md:text-6xl font-black focus:outline-none"
+                placeholder="TYPE TO SEARCH..."
+                className="w-full bg-transparent text-5xl md:text-8xl font-black uppercase tracking-tighter placeholder:text-sage focus:outline-none"
               />
-              <p className="text-[10px] font-bold text-sage uppercase tracking-[0.4em] mt-4">Press enter to search the database</p>
+              <p className="text-[10px] font-bold text-sage uppercase tracking-[0.5em] mt-8 flex items-center gap-4">
+                <span className="w-12 h-px bg-sage" /> INITIALIZING SEARCH PROTOCOL
+              </p>
             </form>
           </motion.div>
         )}

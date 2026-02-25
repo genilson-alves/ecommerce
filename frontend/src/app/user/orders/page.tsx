@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { Package, Clock, Truck, CheckCircle, RefreshCcw } from "lucide-react";
+import { Package, Clock, Truck, CheckCircle, RefreshCcw, AlertCircle } from "lucide-react";
 import { useAuthStore } from "@/lib/auth-store";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -11,12 +11,12 @@ import { useRouter } from "next/navigation";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 const statusConfig = {
-  PENDING: { icon: Clock, color: "text-clay", bg: "bg-clay/10" },
-  PAID: { icon: CheckCircle, color: "text-green-600", bg: "bg-green-50" },
-  PREPARING: { icon: RefreshCcw, color: "text-sulfur", bg: "bg-sulfur/10" },
-  SHIPPED: { icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
-  DELIVERED: { icon: Package, color: "text-deep-olive", bg: "bg-deep-olive/10" },
-  CANCELLED: { icon: CheckCircle, color: "text-red-600", bg: "bg-red-50" },
+  PENDING: { icon: Clock, color: "text-clay", bg: "bg-clay/10", border: "border-sage/30" },
+  PAID: { icon: CheckCircle, color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-200" },
+  PREPARING: { icon: RefreshCcw, color: "text-indigo-700", bg: "bg-indigo-50", border: "border-indigo-200" },
+  SHIPPED: { icon: Truck, color: "text-blue-700", bg: "bg-blue-50", border: "border-blue-200" },
+  DELIVERED: { icon: Package, color: "text-deep-olive", bg: "bg-bone", border: "border-sage" },
+  CANCELLED: { icon: AlertCircle, color: "text-rose-700", bg: "bg-rose-50", border: "border-rose-200" },
 };
 
 export default function OrdersPage() {
@@ -24,7 +24,12 @@ export default function OrdersPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) router.push("/login");
+    // If user is null (not just loading), redirect to home or login
+    // We check for undefined vs null to handle hydration correctly
+    const storedAuth = localStorage.getItem('ecommerce-auth-storage');
+    if (!user && !storedAuth) {
+      router.push("/login");
+    }
   }, [user, router]);
 
   const { data: orders, isLoading, isError } = useQuery({
@@ -66,7 +71,7 @@ export default function OrdersPage() {
           {orders.map((order: any) => {
             const Config = statusConfig[order.status as keyof typeof statusConfig] || statusConfig.PENDING;
             return (
-              <div key={order.id} className="border border-sage bg-bone/50 group hover:border-deep-olive transition-colors">
+              <div key={order.id} className="border border-sage bg-bone group hover:border-deep-olive transition-colors">
                 <div className="p-8 flex flex-col md:flex-row justify-between gap-8 border-b border-sage/30">
                   <div className="space-y-2">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-sage">ID: {order.id}</p>
@@ -74,7 +79,7 @@ export default function OrdersPage() {
                       Order Placed on {new Date(order.createdAt).toLocaleDateString()}
                     </h3>
                   </div>
-                  <div className={`flex items-center gap-3 px-6 py-2 border border-sage h-fit ${Config.bg}`}>
+                  <div className={`flex items-center gap-3 px-6 py-2 border ${Config.border} h-fit ${Config.bg}`}>
                     <Config.icon size={16} className={`${Config.color} ${order.status === 'PREPARING' ? 'animate-spin' : ''}`} />
                     <span className={`text-[10px] font-black uppercase tracking-widest ${Config.color}`}>
                       {order.status}
