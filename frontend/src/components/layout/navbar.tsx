@@ -2,12 +2,13 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Search, User, X, LogOut, UserCircle, ShoppingBag, LayoutDashboard } from "lucide-react";
+import { Menu, Search, User, X, LogOut, UserCircle, ShoppingBag, LayoutDashboard, Sun, Moon } from "lucide-react";
 import { CartDrawer } from "./cart-drawer";
 import { useAuthStore } from "@/lib/auth-store";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
 
 export const Navbar = () => {
   const { user, logout } = useAuthStore();
@@ -15,8 +16,11 @@ export const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   const searchRef = useRef<HTMLDivElement>(null);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setIsSearchOpen(false);
@@ -47,6 +51,8 @@ export const Navbar = () => {
     }
   };
 
+  if (!mounted) return null;
+
   return (
     <nav className="fixed top-0 w-full z-50 bg-bone border-b border-sage h-20 flex items-center">
       <div className="max-w-7xl mx-auto px-6 w-full flex items-center justify-between">
@@ -60,27 +66,34 @@ export const Navbar = () => {
           <Link href="/journal" className="hover:text-deep-olive transition-colors hover-underline">Journal</Link>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <button 
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="p-3 text-deep-olive hover:bg-clay transition-all rounded-full"
+            className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full"
           >
             {isSearchOpen ? <X size={18} /> : <Search size={18} />}
           </button>
           
-          <div className="p-1">
+          <div className="flex items-center">
             <CartDrawer />
           </div>
+
+          <button 
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full"
+          >
+            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
 
           <div className="h-4 w-px bg-sage mx-2" />
 
           {user ? (
             <div className="flex items-center group relative">
-              <button className="p-3 text-deep-olive hover:bg-clay transition-all rounded-full">
+              <button className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full">
                 <User size={18} />
               </button>
               
-              <div className="absolute top-full right-0 mt-2 w-56 bg-bone border border-sage opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-200 z-50">
+              <div className="absolute top-full right-0 mt-2 w-56 bg-bone border border-sage opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-200 z-50 shadow-xl">
                 <div className="p-5 border-b border-sage bg-clay/30">
                   <p className="text-[9px] font-black text-deep-olive uppercase tracking-[0.2em] truncate opacity-50">{user.email}</p>
                 </div>
@@ -97,7 +110,7 @@ export const Navbar = () => {
                 )}
                 <button 
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-red-600 hover:bg-red-50 transition-colors border-t border-sage/50"
+                  className="w-full flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors border-t border-sage/50"
                 >
                   <LogOut size={14} /> Logout Session
                 </button>
@@ -113,14 +126,14 @@ export const Navbar = () => {
               </Link>
               <Link 
                 href="/register" 
-                className="text-[10px] font-bold uppercase tracking-widest bg-deep-olive text-bone px-6 py-3 hover:bg-black transition-all active:scale-95"
+                className="text-[10px] font-bold uppercase tracking-widest bg-deep-olive text-bone px-6 py-3 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all active:scale-95"
               >
                 Register
               </Link>
             </div>
           )}
           
-          <button className="md:hidden p-3 text-deep-olive hover:bg-clay rounded-full"><Menu size={18} /></button>
+          <button className="md:hidden p-2.5 text-deep-olive hover:bg-clay rounded-full"><Menu size={18} /></button>
         </div>
       </div>
 
@@ -131,7 +144,7 @@ export const Navbar = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="absolute top-20 left-0 w-full overflow-hidden bg-bone border-b border-sage z-40"
+            className="absolute top-20 left-0 w-full overflow-hidden bg-bone border-b border-sage z-40 shadow-2xl"
           >
             <form onSubmit={handleSearch} className="max-w-7xl mx-auto px-6 py-12">
               <input 

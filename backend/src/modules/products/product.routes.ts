@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { create, getAll, getOne, update } from './product.controller';
+import { create, getAll, getOne, update, remove } from './product.controller';
 import { authenticateToken } from '../../common/middlewares/auth.middleware';
 import { requireRole } from '../../common/middlewares/role.middleware';
 

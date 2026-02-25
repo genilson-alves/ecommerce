@@ -1,17 +1,31 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bone: #FAF9F6;
-  --color-clay: #EBEBEB;
-  --color-sage: #D1D1D1;
-  --color-deep-olive: #121212;
-  --color-sulfur: #3E5C76; /* Muted Navy Accent */
+  --color-bone: var(--background);
+  --color-deep-olive: var(--foreground);
+  --color-clay: var(--secondary-bg);
+  --color-sage: var(--border-color);
+  --color-sulfur: #3E5C76;
   --font-geist-sans: var(--font-geist-sans);
+}
+
+:root {
+  --background: #FAF9F6;
+  --foreground: #121212;
+  --secondary-bg: #EBEBEB;
+  --border-color: #D1D1D1;
+}
+
+.dark {
+  --background: #0A0A0A;
+  --foreground: #FAF9F6;
+  --secondary-bg: #1A1A1A;
+  --border-color: #333333;
 }
 
 @layer base {
   body {
-    @apply bg-bone text-deep-olive antialiased font-sans;
+    @apply bg-bone text-deep-olive antialiased font-sans transition-colors duration-300;
   }
 }
 

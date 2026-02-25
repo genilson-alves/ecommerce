@@ -56,10 +56,10 @@ export const CartDrawer = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button className="hover:text-sage transition-colors relative">
-          <ShoppingCart size={20} />
+        <button className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full relative">
+          <ShoppingCart size={18} />
           {getItemCount() > 0 && (
-            <span className="absolute -top-2 -right-2 bg-deep-olive text-bone text-[8px] h-4 w-4 rounded-full flex items-center justify-center font-bold">
+            <span className="absolute top-1.5 right-1.5 bg-sulfur text-white text-[7px] h-3.5 w-3.5 rounded-full flex items-center justify-center font-black">
               {getItemCount()}
             </span>
           )}
