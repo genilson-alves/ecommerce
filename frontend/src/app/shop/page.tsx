@@ -10,6 +10,8 @@ import { useSearchParams } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
+const iconTransition = { type: "spring", stiffness: 400, damping: 17 };
+
 export default function ShopPage() {
   const searchParams = useSearchParams();
   const nameQuery = searchParams.get("name") || "";
@@ -17,7 +19,6 @@ export default function ShopPage() {
   const [priceRange, setPriceRange] = useState<number | null>(null);
   const [sortBy, setSortBy] = useState("newest");
 
-  // Fetch unique categories from products
   const { data: allProductsData } = useQuery({
     queryKey: ["all-products-for-categories"],
     queryFn: async () => {
@@ -44,36 +45,40 @@ export default function ShopPage() {
   const products = data?.data || [];
 
   return (
-    <div className="pt-40 pb-20 px-6 max-w-7xl mx-auto">
+    <div className="pt-40 pb-20 px-6 max-w-7xl mx-auto text-deep-olive">
       <div className="flex flex-col md:flex-row gap-16">
         <aside className="w-full md:w-64 space-y-12">
           <div>
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage mb-8 border-b border-sage pb-4">
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage mb-8 border-b border-sage pb-4 italic">
               01. CATEGORIES
             </h3>
             <div className="space-y-4">
-              <button 
+              <motion.button 
+                whileHover={{ scale: 1.05, x: 4 }}
+                transition={iconTransition}
                 onClick={() => setSelectedCategory(null)}
-                className={`block text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:translate-x-1 group text-left ${!selectedCategory ? 'text-deep-olive' : 'text-sage hover:text-deep-olive'}`}
+                className={`block text-xs font-bold uppercase tracking-widest transition-all group text-left ${!selectedCategory ? 'text-deep-olive' : 'text-sage hover:text-deep-olive'}`}
               >
-                <span className={`inline-block w-2 h-px bg-deep-olive mr-2 transition-all ${!selectedCategory ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`} />
+                <span className={`inline-block w-2 h-px bg-deep-olive mr-2 transition-all ${!selectedCategory ? 'opacity-100' : 'opacity-0'}`} />
                 All Objects
-              </button>
+              </motion.button>
               {categories.map((cat) => (
-                <button 
+                <motion.button 
                   key={cat}
+                  whileHover={{ scale: 1.05, x: 4 }}
+                  transition={iconTransition}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`block text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:translate-x-1 group text-left ${selectedCategory === cat ? 'text-deep-olive' : 'text-sage hover:text-deep-olive'}`}
+                  className={`block text-xs font-bold uppercase tracking-widest transition-all group text-left ${selectedCategory === cat ? 'text-deep-olive' : 'text-sage hover:text-deep-olive'}`}
                 >
-                  <span className={`inline-block w-2 h-px bg-deep-olive mr-2 transition-all ${selectedCategory === cat ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`} />
+                  <span className={`inline-block w-2 h-px bg-deep-olive mr-2 transition-all ${selectedCategory === cat ? 'opacity-100' : 'opacity-0'}`} />
                   {cat}
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>
 
           <div>
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage mb-8 border-b border-sage pb-4">
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage mb-8 border-b border-sage pb-4 italic">
               02. PRICE RANGE
             </h3>
             <div className="space-y-6">
@@ -97,13 +102,13 @@ export default function ShopPage() {
           </div>
 
           <div>
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage mb-8 border-b border-sage pb-4">
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage mb-8 border-b border-sage pb-4 italic">
               03. SORT BY
             </h3>
             <select 
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full bg-transparent border border-sage p-3 text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-deep-olive hover:bg-clay/10 transition-colors cursor-pointer"
+              className="w-full bg-transparent border border-sage p-3 text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-deep-olive hover:bg-clay transition-colors cursor-pointer"
             >
               <option value="newest">Newest Arrivals</option>
               <option value="price_asc">Price: Low to High</option>

@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const iconTransition = { type: "spring", stiffness: 400, damping: 17 };
 
 function ProductContent() {
   const params = useParams();
@@ -65,7 +66,6 @@ function ProductContent() {
   if (isError || !product) return (
     <div className="h-screen flex flex-col items-center justify-center bg-bone gap-6 text-center p-6">
       <h1 className="text-4xl font-black uppercase tracking-tighter italic text-deep-olive">Product Not Found</h1>
-      <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-sage">Verify Identification Code: {id}</p>
       <button onClick={() => router.push("/shop")} className="text-xs font-bold uppercase tracking-widest underline underline-offset-8 text-sage hover:text-deep-olive transition-colors">Return to Collection</button>
     </div>
   );
@@ -93,7 +93,7 @@ function ProductContent() {
       }, { withCredentials: true });
       
       toast.success("ORDER PLACED SUCCESSFULLY");
-      router.push("/orders");
+      router.push("/user/orders");
     } catch (error) {
       toast.error("PURCHASE FAILED");
     } finally {
@@ -102,14 +102,18 @@ function ProductContent() {
     }
   };
 
+  const isOutOfStock = product.stock <= 0;
+
   return (
     <div className="pt-40 pb-20 px-6 max-w-7xl mx-auto">
-      <button 
+      <motion.button 
+        whileHover={{ x: -4 }}
+        transition={iconTransition}
         onClick={() => router.back()}
         className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-sage hover:text-deep-olive transition-colors mb-12 group"
       >
-        <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to Collection
-      </button>
+        <ArrowLeft size={14} /> Back to Collection
+      </motion.button>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-16">
         <div className="md:col-span-7 bg-clay/10 border border-sage aspect-square relative overflow-hidden group">
@@ -122,12 +126,14 @@ function ProductContent() {
             }}
           />
           {user?.role === 'ADMIN' && (
-            <button 
+            <motion.button 
+              whileHover={{ scale: 1.1 }}
+              transition={iconTransition}
               onClick={isEditing ? () => setIsEditing(false) : handleEditInit}
-              className="absolute top-8 right-8 bg-deep-olive text-bone p-4 hover:bg-black transition-colors z-10"
+              className="absolute top-8 right-8 bg-deep-olive text-bone p-4 hover:bg-black transition-colors z-10 rounded-full"
             >
               {isEditing ? <X size={20} /> : <Edit2 size={20} />}
-            </button>
+            </motion.button>
           )}
         </div>
 
@@ -156,11 +162,15 @@ function ProductContent() {
                 <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage">{product.category}</span>
               )}
               <span className="text-sage">/</span>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-clay">{product.salesCount} SALES TO DATE</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-clay">{product.salesCount} SALES</span>
+              <span className="text-sage">/</span>
+              <span className={`text-[10px] font-black uppercase tracking-widest ${isOutOfStock ? 'text-red-500' : 'text-deep-olive'}`}>
+                {isOutOfStock ? 'OUT OF STOCK' : `${product.stock} IN STOCK`}
+              </span>
             </div>
           </div>
 
-          <div className="text-4xl font-black tracking-tight tabular-nums">
+          <div className="text-4xl font-black tracking-tight tabular-nums text-deep-olive">
             {isEditing ? (
               <div className="flex items-center gap-2">
                 $ <input 
@@ -175,7 +185,7 @@ function ProductContent() {
             )}
           </div>
 
-          <div className="space-y-4 border-t border-sage pt-8">
+          <div className="space-y-4 border-t border-sage pt-8 text-deep-olive">
             <label className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage block italic">Description</label>
             {isEditing ? (
               <textarea 
@@ -192,13 +202,15 @@ function ProductContent() {
           </div>
 
           {isEditing ? (
-            <PrimaryButton 
-              onClick={handleSave}
-              disabled={updateMutation.isPending}
-              className="w-full py-8 text-sm tracking-[0.3em] font-black uppercase flex items-center justify-center gap-4"
-            >
-              {updateMutation.isPending ? <Loader2 className="animate-spin" size={20} /> : <><Save size={20} /> SYNC CHANGES</>}
-            </PrimaryButton>
+            <motion.div whileHover={{ scale: 1.02 }} transition={iconTransition}>
+              <PrimaryButton 
+                onClick={handleSave}
+                disabled={updateMutation.isPending}
+                className="w-full py-8 text-sm tracking-[0.3em] font-black uppercase flex items-center justify-center gap-4"
+              >
+                {updateMutation.isPending ? <Loader2 className="animate-spin" size={20} /> : <><Save size={20} /> SYNC CHANGES</>}
+              </PrimaryButton>
+            </motion.div>
           ) : (
             <div className="space-y-6 pt-10">
               <div className="flex items-center border border-sage w-fit bg-bone">
@@ -208,7 +220,7 @@ function ProductContent() {
                 >
                   <Minus size={16} />
                 </button>
-                <span className="w-16 text-center font-black text-xl">{quantity}</span>
+                <span className="w-16 text-center font-black text-xl text-deep-olive">{quantity}</span>
                 <button 
                   onClick={() => setQuantity(quantity + 1)}
                   className="p-4 hover:bg-clay/10 transition-colors border-l border-sage"
@@ -218,21 +230,28 @@ function ProductContent() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <PrimaryButton 
-                  onClick={() => setShowBuyConfirm(true)}
-                  className="py-8 text-xs tracking-[0.2em] font-black uppercase flex items-center justify-center gap-3 shadow-lg shadow-deep-olive/10"
-                >
-                  <ShoppingBag size={18} /> Buy Now
-                </PrimaryButton>
-                <button 
-                  onClick={() => {
-                    addItem({ id: product.id, name: product.name, price: Number(product.price) });
-                    toast.success("ADDED TO COLLECTION");
-                  }}
-                  className="bg-sulfur text-deep-olive py-8 text-xs tracking-[0.2em] font-black uppercase flex items-center justify-center gap-3 border border-sage hover:bg-[#d9d78d] transition-colors"
-                >
-                  <Plus size={18} /> Add to Cart
-                </button>
+                <motion.div whileHover={!isOutOfStock ? { scale: 1.05 } : {}} transition={iconTransition}>
+                  <PrimaryButton 
+                    onClick={() => setShowBuyConfirm(true)}
+                    disabled={isOutOfStock}
+                    className={`w-full py-8 text-xs tracking-[0.2em] font-black uppercase flex items-center justify-center gap-3 shadow-lg shadow-deep-olive/10 ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <ShoppingBag size={18} /> {isOutOfStock ? 'OUT OF STOCK' : 'Buy Now'}
+                  </PrimaryButton>
+                </motion.div>
+                
+                <motion.div whileHover={!isOutOfStock ? { scale: 1.05 } : {}} transition={iconTransition}>
+                  <button 
+                    onClick={() => {
+                      addItem({ id: product.id, name: product.name, price: Number(product.price) });
+                      toast.success("ADDED TO COLLECTION");
+                    }}
+                    disabled={isOutOfStock}
+                    className={`w-full bg-sulfur text-deep-olive py-8 text-xs tracking-[0.2em] font-black uppercase flex items-center justify-center gap-3 border border-sage hover:bg-[#d9d78d] transition-all ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <Plus size={18} /> {isOutOfStock ? 'OUT OF STOCK' : 'Add to Cart'}
+                  </button>
+                </motion.div>
               </div>
             </div>
           )}
@@ -257,10 +276,10 @@ function ProductContent() {
             >
               <div className="flex flex-col items-center text-center space-y-8">
                 <div className="p-4 bg-sulfur border border-sage rounded-full animate-pulse">
-                  <ShoppingBag size={32} strokeWidth={3} />
+                  <ShoppingBag size={32} strokeWidth={3} className="text-deep-olive" />
                 </div>
                 <div>
-                  <h2 className="text-4xl font-black uppercase tracking-tighter italic mb-4">Confirm Acquisition</h2>
+                  <h2 className="text-4xl font-black uppercase tracking-tighter italic mb-4 text-deep-olive">Confirm Acquisition</h2>
                   <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-sage">
                     You are about to acquire {quantity}x {product.name} for ${(Number(product.price) * quantity).toFixed(2)}.
                   </p>
@@ -268,7 +287,7 @@ function ProductContent() {
                 <div className="grid grid-cols-2 gap-4 w-full pt-8">
                   <button 
                     onClick={() => setShowBuyConfirm(false)}
-                    className="py-6 border border-sage text-[10px] font-black uppercase tracking-widest hover:bg-clay/10 transition-colors"
+                    className="py-6 border border-sage text-[10px] font-black uppercase tracking-widest text-deep-olive hover:bg-clay/10 transition-colors"
                   >
                     Cancel
                   </button>

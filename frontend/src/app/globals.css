@@ -5,22 +5,22 @@
   --color-deep-olive: var(--foreground);
   --color-clay: var(--secondary-bg);
   --color-sage: var(--border-color);
-  --color-sulfur: #3E5C76;
+  --color-sulfur: #E6E49F; /* Classic Sulfur Accent */
   --font-geist-sans: var(--font-geist-sans);
 }
 
 :root {
-  --background: #FAF9F6;
-  --foreground: #121212;
-  --secondary-bg: #EBEBEB;
-  --border-color: #D1D1D1;
+  --background: #E3E7D3; /* Light Bone */
+  --foreground: #25291C; /* Dark Olive Text */
+  --secondary-bg: #BDC2BF; /* Clay */
+  --border-color: #989C94; /* Sage */
 }
 
 .dark {
-  --background: #0A0A0A;
-  --foreground: #FAF9F6;
-  --secondary-bg: #1A1A1A;
-  --border-color: #333333;
+  --background: #1A1D14; /* Deep Forest Dark */
+  --foreground: #E3E7D3; /* Bone Text */
+  --secondary-bg: #25291C;
+  --border-color: #3A3F2F;
 }
 
 @layer base {

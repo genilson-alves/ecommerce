@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 
+const iconTransition = { type: "spring", stiffness: 400, damping: 17 };
+
 export const Navbar = () => {
   const { user, logout } = useAuthStore();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -67,31 +69,39 @@ export const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-1">
-          <button 
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            transition={iconTransition}
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full"
+            className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full flex items-center justify-center"
           >
             {isSearchOpen ? <X size={18} /> : <Search size={18} />}
-          </button>
+          </motion.button>
           
           <div className="flex items-center">
             <CartDrawer />
           </div>
 
-          <button 
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            transition={iconTransition}
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full"
+            className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full flex items-center justify-center"
           >
             {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
+          </motion.button>
 
           <div className="h-4 w-px bg-sage mx-2" />
 
           {user ? (
             <div className="flex items-center group relative">
-              <button className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full">
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                transition={iconTransition}
+                className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full flex items-center justify-center"
+              >
                 <User size={18} />
-              </button>
+              </motion.button>
               
               <div className="absolute top-full right-0 mt-2 w-56 bg-bone border border-sage opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-200 z-50 shadow-xl">
                 <div className="p-5 border-b border-sage bg-clay/30">
@@ -108,12 +118,14 @@ export const Navbar = () => {
                     <LayoutDashboard size={14} /> Admin Panel
                   </Link>
                 )}
-                <button 
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  transition={iconTransition}
                   onClick={handleLogout}
                   className="w-full flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors border-t border-sage/50"
                 >
                   <LogOut size={14} /> Logout Session
-                </button>
+                </motion.button>
               </div>
             </div>
           ) : (
@@ -124,16 +136,18 @@ export const Navbar = () => {
               >
                 Login
               </Link>
-              <Link 
-                href="/register" 
-                className="text-[10px] font-bold uppercase tracking-widest bg-deep-olive text-bone px-6 py-3 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all active:scale-95"
-              >
-                Register
-              </Link>
+              <motion.div whileHover={{ scale: 1.05 }} transition={iconTransition}>
+                <Link 
+                  href="/register" 
+                  className="text-[10px] font-bold uppercase tracking-widest bg-deep-olive text-bone px-6 py-3 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all active:scale-95 block"
+                >
+                  Register
+                </Link>
+              </motion.div>
             </div>
           )}
           
-          <button className="md:hidden p-2.5 text-deep-olive hover:bg-clay rounded-full"><Menu size={18} /></button>
+          <button className="md:hidden p-2.5 text-deep-olive hover:bg-clay rounded-full flex items-center justify-center"><Menu size={18} /></button>
         </div>
       </div>
 
