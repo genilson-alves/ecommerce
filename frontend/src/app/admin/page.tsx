@@ -3,7 +3,7 @@
 import { AdminLayout, StatsCard } from "@/components/admin/layout";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { DollarSign, Package, ShoppingCart, TrendingUp, Loader2, CheckCircle, RefreshCcw, Truck, Clock } from "lucide-react";
+import { DollarSign, Package, ShoppingCart, TrendingUp, Loader2, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
@@ -44,10 +44,10 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div className="flex flex-col gap-16">
+      <div className="flex flex-col gap-16 text-deep-olive">
         <header className="border-b border-sage pb-12 flex justify-between items-end">
           <div>
-            <h1 className="text-8xl font-black uppercase tracking-tighter italic leading-none text-deep-olive">OVERVIEW</h1>
+            <h1 className="text-8xl font-black uppercase tracking-tighter italic leading-none">OVERVIEW</h1>
             <p className="text-xs font-bold uppercase tracking-[0.5em] text-sage mt-4">Real-time Intelligence Protocol</p>
           </div>
         </header>
@@ -82,45 +82,51 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           <div className="lg:col-span-8 space-y-8">
             <div className="flex justify-between items-end border-b border-sage pb-6">
-              <h3 className="text-2xl font-black uppercase tracking-tighter italic text-deep-olive">ACTIVE ORDERS</h3>
-              <p className="text-[10px] font-bold text-sage uppercase tracking-widest">{activeOrders?.length || 0} PENDING ACTIONS</p>
+              <h3 className="text-2xl font-black uppercase tracking-tighter italic">ACTIVE ORDERS</h3>
+              <p className="text-[10px] font-bold text-sage uppercase tracking-widest">
+                {activeOrders?.filter((o: any) => o.status !== 'CANCELLED').length || 0} PENDING ACTIONS
+              </p>
             </div>
             
             <div className="space-y-4">
-              {activeOrders?.map((order: any) => (
-                <div key={order.id} className="border border-sage p-6 bg-bone hover:bg-clay/5 transition-colors">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-[9px] font-black text-sage uppercase tracking-widest mb-1">USER: {order.user.email}</p>
-                      <p className="text-xs font-bold uppercase text-deep-olive">${Number(order.totalAmount).toFixed(2)} — {order.items.length} ITEMS</p>
-                    </div>
-                    
-                    <div className="flex gap-4">
-                      <select 
-                        value={order.status}
-                        onChange={(e) => statusMutation.mutate({ orderId: order.id, status: e.target.value })}
-                        className="bg-transparent border border-sage p-2 text-[10px] font-black uppercase tracking-widest focus:outline-none focus:border-deep-olive cursor-pointer"
-                      >
-                        <option value="PAID">PAID</option>
-                        <option value="PREPARING">PREPARING</option>
-                        <option value="SHIPPED">SHIPPED</option>
-                        <option value="DELIVERED">DELIVERED</option>
-                        <option value="CANCELLED">CANCELLED</option>
-                      </select>
+              {activeOrders?.map((order: any) => {
+                const isCancelled = order.status === 'CANCELLED';
+                return (
+                  <div key={order.id} className={`border border-sage p-6 bg-bone hover:bg-clay/5 transition-colors ${isCancelled ? 'opacity-60' : ''}`}>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-[9px] font-black text-sage uppercase tracking-widest mb-1">USER: {order.user.email}</p>
+                        <p className="text-xs font-bold uppercase text-deep-olive">${Number(order.totalAmount).toFixed(2)} — {order.items.length} ITEMS</p>
+                      </div>
+                      
+                      <div className="flex gap-4">
+                        <select 
+                          value={order.status}
+                          disabled={isCancelled}
+                          onChange={(e) => statusMutation.mutate({ orderId: order.id, status: e.target.value })}
+                          className={`bg-transparent border border-sage p-2 text-[10px] font-black uppercase tracking-widest focus:outline-none focus:border-deep-olive transition-all ${isCancelled ? 'cursor-not-allowed border-dashed' : 'cursor-pointer hover:border-deep-olive'}`}
+                        >
+                          <option value="PAID">PAID</option>
+                          <option value="PREPARING">PREPARING</option>
+                          <option value="SHIPPED">SHIPPED</option>
+                          <option value="DELIVERED">DELIVERED</option>
+                          <option value="CANCELLED">CANCELLED</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
           <div className="lg:col-span-4 space-y-8">
-            <h3 className="text-2xl font-black uppercase tracking-tighter italic text-deep-olive border-b border-sage pb-6 text-right">RECENT ACTIVITY</h3>
+            <h3 className="text-2xl font-black uppercase tracking-tighter italic border-b border-sage pb-6 text-right">RECENT ACTIVITY</h3>
             <div className="space-y-6">
               {analytics.recentActivity.map((activity: any) => (
                 <div key={activity.id} className="flex justify-between items-start text-right">
                   <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-deep-olive">{activity.user.split('@')[0]}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest">{activity.user.split('@')[0]}</p>
                     <p className="text-[9px] font-bold text-sage uppercase tabular-nums">{new Date(activity.time).toLocaleTimeString()}</p>
                   </div>
                   <div className="space-y-1">

@@ -5,9 +5,9 @@ import { Plus, ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/store";
 import { useAuthStore } from "@/lib/auth-store";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import axios from "axios";
 import { toast } from "sonner";
+
+const iconTransition = { type: "spring", stiffness: 400, damping: 17 };
 
 interface Product {
   id: string;
@@ -18,8 +18,7 @@ interface Product {
 }
 
 export const ProductCard = ({ product }: { product: Product }) => {
-  const { addItem, clearCart } = useCart();
-  const { user } = useAuthStore();
+  const { addItem } = useCart();
   const router = useRouter();
 
   const handleBuyNow = (e: React.MouseEvent) => {
@@ -41,6 +40,8 @@ export const ProductCard = ({ product }: { product: Product }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      whileHover={{ scale: 1.02 }}
+      transition={iconTransition}
       className="group relative border border-sage bg-bone overflow-hidden flex flex-col h-[500px] cursor-pointer"
       onClick={() => router.push(`/shop/${product.id}`)}
     >
@@ -56,27 +57,31 @@ export const ProductCard = ({ product }: { product: Product }) => {
         
         {/* Hover Reveal Buttons */}
         <div className="absolute bottom-0 left-0 w-full flex flex-col translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            transition={iconTransition}
             onClick={handleBuyNow}
-            className="w-full bg-deep-olive text-bone py-4 font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 hover:bg-black transition-colors border-t border-sage"
+            className="w-full bg-deep-olive text-bone py-4 font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 hover:bg-black transition-colors border-t border-sage cursor-pointer"
           >
             <ShoppingBag size={14} /> Buy Now
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            transition={iconTransition}
             onClick={handleAddToCart}
-            className="w-full bg-sulfur text-deep-olive py-4 font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 hover:bg-[#d9d78d] transition-colors border-t border-sage"
+            className="w-full bg-sulfur text-deep-olive py-4 font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 hover:bg-[#d9d78d] transition-colors border-t border-sage cursor-pointer"
           >
             <Plus size={14} /> Add to Cart
-          </button>
+          </motion.button>
         </div>
       </div>
 
-      <div className="p-6 border-t border-sage">
+      <div className="p-6 border-t border-sage text-deep-olive">
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-black text-lg tracking-tighter uppercase leading-none truncate pr-4">
             {product.name}
           </h3>
-          <span className="font-bold text-sm tabular-nums shrink-0">
+          <span className="font-bold text-sm tabular-nums shrink-0 italic text-sage">
             ${Number(product.price).toFixed(2)}
           </span>
         </div>
@@ -85,7 +90,7 @@ export const ProductCard = ({ product }: { product: Product }) => {
         </p>
         
         <div className="flex items-center gap-2">
-           <span className="text-[8px] font-black uppercase tracking-[0.3em] px-2 py-1 border border-sage/30 rounded-full">Explore Details</span>
+           <span className="text-[8px] font-black uppercase tracking-[0.3em] px-2 py-1 border border-sage/30 rounded-full opacity-50 group-hover:opacity-100 transition-opacity">Explore Details</span>
         </div>
       </div>
     </motion.div>

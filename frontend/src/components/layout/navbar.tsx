@@ -58,22 +58,22 @@ export const Navbar = () => {
   return (
     <nav className="fixed top-0 w-full z-50 bg-bone border-b border-sage h-20 flex items-center">
       <div className="max-w-7xl mx-auto px-6 w-full flex items-center justify-between">
-        <Link href="/" className="text-2xl font-black tracking-tighter hover:scale-[0.98] transition-transform uppercase">
+        <Link href="/" className="text-2xl font-black tracking-tighter hover:scale-[0.98] transition-transform uppercase cursor-pointer">
           ecommerce
         </Link>
         
         <div className="hidden md:flex items-center gap-10 text-[10px] font-bold tracking-[0.3em] uppercase text-sage">
-          <Link href="/shop" className="hover:text-deep-olive transition-colors hover-underline">Shop</Link>
-          <Link href="/about" className="hover:text-deep-olive transition-colors hover-underline">About</Link>
-          <Link href="/journal" className="hover:text-deep-olive transition-colors hover-underline">Journal</Link>
+          <Link href="/shop" className="hover:text-deep-olive transition-colors hover-underline cursor-pointer">Shop</Link>
+          <Link href="/about" className="hover:text-deep-olive transition-colors hover-underline cursor-pointer">About</Link>
+          <Link href="/journal" className="hover:text-deep-olive transition-colors hover-underline cursor-pointer">Journal</Link>
         </div>
 
         <div className="flex items-center gap-1">
           <motion.button 
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.1 }}
             transition={iconTransition}
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full flex items-center justify-center"
+            className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full flex items-center justify-center cursor-pointer"
           >
             {isSearchOpen ? <X size={18} /> : <Search size={18} />}
           </motion.button>
@@ -83,10 +83,10 @@ export const Navbar = () => {
           </div>
 
           <motion.button 
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.1 }}
             transition={iconTransition}
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full flex items-center justify-center"
+            className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full flex items-center justify-center cursor-pointer"
           >
             {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
           </motion.button>
@@ -96,9 +96,9 @@ export const Navbar = () => {
           {user ? (
             <div className="flex items-center group relative">
               <motion.button 
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.1 }}
                 transition={iconTransition}
-                className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full flex items-center justify-center"
+                className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full flex items-center justify-center cursor-pointer"
               >
                 <User size={18} />
               </motion.button>
@@ -107,22 +107,22 @@ export const Navbar = () => {
                 <div className="p-5 border-b border-sage bg-clay/30">
                   <p className="text-[9px] font-black text-deep-olive uppercase tracking-[0.2em] truncate opacity-50">{user.email}</p>
                 </div>
-                <Link href="/profile" className="flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-clay transition-colors">
+                <Link href="/profile" className="flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-clay transition-colors cursor-pointer">
                   <UserCircle size={14} /> Profile
                 </Link>
-                <Link href="/user/orders" className="flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-clay transition-colors border-t border-sage/50">
+                <Link href="/user/orders" className="flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-clay transition-colors border-t border-sage/50 cursor-pointer">
                   <ShoppingBag size={14} /> My Orders
                 </Link>
                 {user.role === 'ADMIN' && (
-                  <Link href="/admin" className="flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-clay transition-colors border-t border-sage/50">
+                  <Link href="/admin" className="flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-clay transition-colors border-t border-sage/50 cursor-pointer">
                     <LayoutDashboard size={14} /> Admin Panel
                   </Link>
                 )}
                 <motion.button 
-                  whileHover={{ scale: 1.02 }}
+                  whileHover={{ scale: 1.02, backgroundColor: "rgba(239, 68, 68, 0.05)" }}
                   transition={iconTransition}
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors border-t border-sage/50"
+                  className="w-full flex items-center gap-3 px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-red-600 hover:text-red-700 transition-colors border-t border-sage/50 cursor-pointer"
                 >
                   <LogOut size={14} /> Logout Session
                 </motion.button>
@@ -132,14 +132,14 @@ export const Navbar = () => {
             <div className="flex items-center gap-4 ml-2">
               <Link 
                 href="/login" 
-                className="text-[10px] font-bold uppercase tracking-widest text-deep-olive hover:text-sulfur transition-colors"
+                className="text-[10px] font-bold uppercase tracking-widest text-deep-olive hover:text-sulfur transition-colors cursor-pointer"
               >
                 Login
               </Link>
               <motion.div whileHover={{ scale: 1.05 }} transition={iconTransition}>
                 <Link 
                   href="/register" 
-                  className="text-[10px] font-bold uppercase tracking-widest bg-deep-olive text-bone px-6 py-3 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all active:scale-95 block"
+                  className="text-[10px] font-bold uppercase tracking-widest bg-deep-olive text-bone px-6 py-3 hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all active:scale-95 block cursor-pointer"
                 >
                   Register
                 </Link>
@@ -147,7 +147,7 @@ export const Navbar = () => {
             </div>
           )}
           
-          <button className="md:hidden p-2.5 text-deep-olive hover:bg-clay rounded-full flex items-center justify-center"><Menu size={18} /></button>
+          <button className="md:hidden p-2.5 text-deep-olive hover:bg-clay rounded-full flex items-center justify-center cursor-pointer"><Menu size={18} /></button>
         </div>
       </div>
 
@@ -160,7 +160,7 @@ export const Navbar = () => {
             exit={{ height: 0, opacity: 0 }}
             className="absolute top-20 left-0 w-full overflow-hidden bg-bone border-b border-sage z-40 shadow-2xl"
           >
-            <form onSubmit={handleSearch} className="max-w-7xl mx-auto px-6 py-12">
+            <form onSubmit={handleSearch} className="max-w-7xl mx-auto px-6 py-12 text-deep-olive">
               <input 
                 autoFocus
                 type="text"

@@ -15,6 +15,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
+
+const iconTransition = { type: "spring", stiffness: 400, damping: 17 };
 
 export const CartDrawer = () => {
   const { items, removeItem, increment, decrement, getTotal, getItemCount, clearCart } = useCart();
@@ -43,7 +46,7 @@ export const CartDrawer = () => {
 
       toast.success("ORDER SYNCHRONIZED SUCCESSFULLY");
       clearCart();
-      router.push("/orders");
+      router.push("/user/orders");
     } catch (error: any) {
       toast.error(error.response?.data?.message || "CHECKOUT SEQUENCE FAILED");
     } finally {
@@ -56,26 +59,30 @@ export const CartDrawer = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full relative">
+        <motion.button 
+          whileHover={{ scale: 1.05 }}
+          transition={iconTransition}
+          className="p-2.5 text-deep-olive hover:bg-clay transition-all rounded-full relative cursor-pointer flex items-center justify-center"
+        >
           <ShoppingCart size={18} />
           {getItemCount() > 0 && (
             <span className="absolute top-1.5 right-1.5 bg-sulfur text-white text-[7px] h-3.5 w-3.5 rounded-full flex items-center justify-center font-black">
               {getItemCount()}
             </span>
           )}
-        </button>
+        </motion.button>
       </SheetTrigger>
       <SheetContent className="bg-clay flex flex-col h-full border-l border-sage p-0 sm:max-w-md">
         <SheetHeader className="p-6 border-b border-sage">
-          <SheetTitle className="text-2xl font-black tracking-tighter uppercase text-deep-olive">
+          <SheetTitle className="text-2xl font-black uppercase tracking-tighter uppercase text-deep-olive">
             Your Cart ({getItemCount()})
           </SheetTitle>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 text-deep-olive">
           {items.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-deep-olive/60">
-              <ShoppingCart size={48} className="mb-4 opacity-20" />
+            <div className="h-full flex flex-col items-center justify-center opacity-40">
+              <ShoppingCart size={48} className="mb-4" />
               <p className="text-xs font-bold uppercase tracking-widest">Your cart is empty</p>
             </div>
           ) : (
@@ -87,34 +94,35 @@ export const CartDrawer = () => {
                 <div className="w-20 h-20 bg-bone border border-sage flex-shrink-0" />
                 <div className="flex-1 flex flex-col justify-between py-1">
                   <div className="flex justify-between items-start">
-                    <h4 className="text-xs font-black uppercase tracking-tight text-deep-olive">
+                    <h4 className="text-xs font-black uppercase tracking-tight">
                       {item.name}
                     </h4>
-                    <button 
+                    <motion.button 
+                      whileHover={{ scale: 1.1, color: "#ef4444" }}
                       onClick={() => removeItem(item.id)}
-                      className="text-deep-olive/40 hover:text-deep-olive transition-colors"
+                      className="text-sage cursor-pointer"
                     >
                       <Trash2 size={14} />
-                    </button>
+                    </motion.button>
                   </div>
                   
                   <div className="flex justify-between items-end">
                     <div className="flex items-center border border-sage bg-bone">
                       <button 
                         onClick={() => decrement(item.id)}
-                        className="p-1 hover:bg-clay transition-colors"
+                        className="p-1 hover:bg-clay transition-colors cursor-pointer"
                       >
                         <Minus size={12} />
                       </button>
                       <span className="text-[10px] font-bold w-8 text-center">{item.quantity}</span>
                       <button 
                         onClick={() => increment(item.id)}
-                        className="p-1 hover:bg-clay transition-colors"
+                        className="p-1 hover:bg-clay transition-colors cursor-pointer"
                       >
                         <Plus size={12} />
                       </button>
                     </div>
-                    <span className="text-xs font-bold text-deep-olive">
+                    <span className="text-xs font-bold">
                       ${(item.price * item.quantity).toFixed(2)}
                     </span>
                   </div>
@@ -130,20 +138,22 @@ export const CartDrawer = () => {
               <span>Subtotal</span>
               <span>${getTotal().toFixed(2)}</span>
             </div>
-            <p className="text-[10px] text-sage font-bold uppercase tracking-widest leading-relaxed">
-              Shipping and taxes calculated at checkout.
+            <p className="text-[10px] text-sage font-bold uppercase tracking-widest leading-relaxed italic">
+              * Order processing time approximately 24-48h.
             </p>
-            <PrimaryButton 
-              onClick={handleCheckout}
-              disabled={isCheckingOut}
-              className="w-full text-xs tracking-widest uppercase font-black py-4 flex items-center justify-center gap-3"
-            >
-              {isCheckingOut ? (
-                <><Loader2 className="animate-spin" size={16} /> INITIALIZING...</>
-              ) : (
-                "Proceed to Checkout"
-              )}
-            </PrimaryButton>
+            <motion.div whileHover={{ scale: 1.02 }} transition={iconTransition}>
+              <PrimaryButton 
+                onClick={handleCheckout}
+                disabled={isCheckingOut}
+                className="w-full text-xs tracking-widest uppercase font-black py-4 flex items-center justify-center gap-3 cursor-pointer"
+              >
+                {isCheckingOut ? (
+                  <><Loader2 className="animate-spin" size={16} /> INITIALIZING...</>
+                ) : (
+                  "Proceed to Checkout"
+                )}
+              </PrimaryButton>
+            </motion.div>
           </div>
         )}
       </SheetContent>

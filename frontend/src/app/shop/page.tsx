@@ -9,7 +9,6 @@ import { Loader2, SlidersHorizontal } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-
 const iconTransition = { type: "spring", stiffness: 400, damping: 17 };
 
 export default function ShopPage() {
@@ -57,7 +56,7 @@ export default function ShopPage() {
                 whileHover={{ scale: 1.05, x: 4 }}
                 transition={iconTransition}
                 onClick={() => setSelectedCategory(null)}
-                className={`block text-xs font-bold uppercase tracking-widest transition-all group text-left ${!selectedCategory ? 'text-deep-olive' : 'text-sage hover:text-deep-olive'}`}
+                className={`block text-xs font-bold uppercase tracking-widest transition-all group text-left cursor-pointer ${!selectedCategory ? 'text-deep-olive' : 'text-sage hover:text-deep-olive'}`}
               >
                 <span className={`inline-block w-2 h-px bg-deep-olive mr-2 transition-all ${!selectedCategory ? 'opacity-100' : 'opacity-0'}`} />
                 All Objects
@@ -68,7 +67,7 @@ export default function ShopPage() {
                   whileHover={{ scale: 1.05, x: 4 }}
                   transition={iconTransition}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`block text-xs font-bold uppercase tracking-widest transition-all group text-left ${selectedCategory === cat ? 'text-deep-olive' : 'text-sage hover:text-deep-olive'}`}
+                  className={`block text-xs font-bold uppercase tracking-widest transition-all group text-left cursor-pointer ${selectedCategory === cat ? 'text-deep-olive' : 'text-sage hover:text-deep-olive'}`}
                 >
                   <span className={`inline-block w-2 h-px bg-deep-olive mr-2 transition-all ${selectedCategory === cat ? 'opacity-100' : 'opacity-0'}`} />
                   {cat}
@@ -92,7 +91,7 @@ export default function ShopPage() {
                   const val = parseInt(e.target.value);
                   setPriceRange(val > 2000 ? null : val);
                 }}
-                className="w-full accent-deep-olive bg-sage h-px appearance-none cursor-pointer"
+                className="w-full accent-deep-olive bg-sage/20 h-px appearance-none cursor-pointer"
               />
               <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-sage">
                 <span>$0</span>
@@ -108,7 +107,7 @@ export default function ShopPage() {
             <select 
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full bg-transparent border border-sage p-3 text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-deep-olive hover:bg-clay transition-colors cursor-pointer"
+              className="w-full bg-transparent border border-sage p-3 text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-deep-olive hover:bg-clay/10 transition-colors cursor-pointer"
             >
               <option value="newest">Newest Arrivals</option>
               <option value="price_asc">Price: Low to High</option>

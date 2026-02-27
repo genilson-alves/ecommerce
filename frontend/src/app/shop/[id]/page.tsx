@@ -66,7 +66,7 @@ function ProductContent() {
   if (isError || !product) return (
     <div className="h-screen flex flex-col items-center justify-center bg-bone gap-6 text-center p-6">
       <h1 className="text-4xl font-black uppercase tracking-tighter italic text-deep-olive">Product Not Found</h1>
-      <button onClick={() => router.push("/shop")} className="text-xs font-bold uppercase tracking-widest underline underline-offset-8 text-sage hover:text-deep-olive transition-colors">Return to Collection</button>
+      <button onClick={() => router.push("/shop")} className="text-xs font-bold uppercase tracking-widest underline underline-offset-8 text-sage hover:text-deep-olive transition-colors cursor-pointer">Return to Collection</button>
     </div>
   );
 
@@ -107,10 +107,10 @@ function ProductContent() {
   return (
     <div className="pt-40 pb-20 px-6 max-w-7xl mx-auto">
       <motion.button 
-        whileHover={{ x: -4 }}
+        whileHover={{ scale: 1.05, x: -4 }}
         transition={iconTransition}
         onClick={() => router.back()}
-        className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-sage hover:text-deep-olive transition-colors mb-12 group"
+        className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-sage hover:text-deep-olive transition-colors mb-12 group cursor-pointer"
       >
         <ArrowLeft size={14} /> Back to Collection
       </motion.button>
@@ -130,7 +130,7 @@ function ProductContent() {
               whileHover={{ scale: 1.1 }}
               transition={iconTransition}
               onClick={isEditing ? () => setIsEditing(false) : handleEditInit}
-              className="absolute top-8 right-8 bg-deep-olive text-bone p-4 hover:bg-black transition-colors z-10 rounded-full"
+              className="absolute top-8 right-8 bg-deep-olive text-bone p-4 hover:bg-black transition-colors z-10 rounded-full cursor-pointer shadow-xl"
             >
               {isEditing ? <X size={20} /> : <Edit2 size={20} />}
             </motion.button>
@@ -186,7 +186,7 @@ function ProductContent() {
           </div>
 
           <div className="space-y-4 border-t border-sage pt-8 text-deep-olive">
-            <label className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage block italic">Description</label>
+            <label className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage block italic text-sage opacity-50">Description</label>
             {isEditing ? (
               <textarea 
                 className="w-full bg-clay/5 border border-sage p-4 text-xs font-bold leading-relaxed focus:outline-none"
@@ -206,7 +206,7 @@ function ProductContent() {
               <PrimaryButton 
                 onClick={handleSave}
                 disabled={updateMutation.isPending}
-                className="w-full py-8 text-sm tracking-[0.3em] font-black uppercase flex items-center justify-center gap-4"
+                className="w-full py-8 text-sm tracking-[0.3em] font-black uppercase flex items-center justify-center gap-4 cursor-pointer"
               >
                 {updateMutation.isPending ? <Loader2 className="animate-spin" size={20} /> : <><Save size={20} /> SYNC CHANGES</>}
               </PrimaryButton>
@@ -214,19 +214,23 @@ function ProductContent() {
           ) : (
             <div className="space-y-6 pt-10">
               <div className="flex items-center border border-sage w-fit bg-bone">
-                <button 
+                <motion.button 
+                  whileHover={{ scale: 1.1, backgroundColor: "rgba(0,0,0,0.05)" }}
+                  transition={iconTransition}
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="p-4 hover:bg-clay/10 transition-colors border-r border-sage"
+                  className="p-4 transition-colors border-r border-sage cursor-pointer"
                 >
                   <Minus size={16} />
-                </button>
-                <span className="w-16 text-center font-black text-xl text-deep-olive">{quantity}</span>
-                <button 
+                </motion.button>
+                <span className="w-16 text-center font-black text-xl text-deep-olive tabular-nums">{quantity}</span>
+                <motion.button 
+                  whileHover={{ scale: 1.1, backgroundColor: "rgba(0,0,0,0.05)" }}
+                  transition={iconTransition}
                   onClick={() => setQuantity(quantity + 1)}
-                  className="p-4 hover:bg-clay/10 transition-colors border-l border-sage"
+                  className="p-4 transition-colors border-l border-sage cursor-pointer"
                 >
                   <Plus size={16} />
-                </button>
+                </motion.button>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -234,7 +238,7 @@ function ProductContent() {
                   <PrimaryButton 
                     onClick={() => setShowBuyConfirm(true)}
                     disabled={isOutOfStock}
-                    className={`w-full py-8 text-xs tracking-[0.2em] font-black uppercase flex items-center justify-center gap-3 shadow-lg shadow-deep-olive/10 ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`w-full py-8 text-xs tracking-[0.2em] font-black uppercase flex items-center justify-center gap-3 shadow-lg shadow-deep-olive/10 cursor-pointer ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     <ShoppingBag size={18} /> {isOutOfStock ? 'OUT OF STOCK' : 'Buy Now'}
                   </PrimaryButton>
@@ -247,7 +251,7 @@ function ProductContent() {
                       toast.success("ADDED TO COLLECTION");
                     }}
                     disabled={isOutOfStock}
-                    className={`w-full bg-sulfur text-deep-olive py-8 text-xs tracking-[0.2em] font-black uppercase flex items-center justify-center gap-3 border border-sage hover:bg-[#d9d78d] transition-all ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`w-full bg-sulfur text-deep-olive py-8 text-xs tracking-[0.2em] font-black uppercase flex items-center justify-center gap-3 border border-sage hover:bg-[#d9d78d] transition-all cursor-pointer ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     <Plus size={18} /> {isOutOfStock ? 'OUT OF STOCK' : 'Add to Cart'}
                   </button>
@@ -266,7 +270,7 @@ function ProductContent() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowBuyConfirm(false)}
-              className="absolute inset-0 bg-deep-olive/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-deep-olive/40 backdrop-blur-sm cursor-pointer"
             />
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -285,19 +289,23 @@ function ProductContent() {
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-4 w-full pt-8">
-                  <button 
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    transition={iconTransition}
                     onClick={() => setShowBuyConfirm(false)}
-                    className="py-6 border border-sage text-[10px] font-black uppercase tracking-widest text-deep-olive hover:bg-clay/10 transition-colors"
+                    className="py-6 border border-sage text-[10px] font-black uppercase tracking-widest text-deep-olive hover:bg-clay/10 transition-colors cursor-pointer"
                   >
                     Cancel
-                  </button>
-                  <PrimaryButton 
-                    onClick={handleBuyNow}
-                    disabled={isCheckingOut}
-                    className="py-6 flex items-center justify-center gap-3"
-                  >
-                    {isCheckingOut ? <Loader2 className="animate-spin" size={16} /> : "Authorize"}
-                  </PrimaryButton>
+                  </motion.button>
+                  <motion.div whileHover={{ scale: 1.05 }} transition={iconTransition}>
+                    <PrimaryButton 
+                      onClick={handleBuyNow}
+                      disabled={isCheckingOut}
+                      className="w-full py-6 flex items-center justify-center gap-3 cursor-pointer"
+                    >
+                      {isCheckingOut ? <Loader2 className="animate-spin" size={16} /> : "Authorize"}
+                    </PrimaryButton>
+                  </motion.div>
                 </div>
               </div>
             </motion.div>
