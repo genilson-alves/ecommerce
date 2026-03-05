@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Plus, ShoppingBag } from "lucide-react";
+import { Plus, ShoppingBag, Star } from "lucide-react";
 import { useCart } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -15,6 +15,8 @@ interface Product {
   description?: string;
   category?: string;
   stock?: number;
+  avgRating?: number;
+  salesCount?: number;
 }
 
 export const ProductCard = ({ product }: { product: Product }) => {
@@ -46,10 +48,10 @@ export const ProductCard = ({ product }: { product: Product }) => {
       exit={{ opacity: 0 }}
       whileHover={{ scale: 1.02 }}
       transition={iconTransition}
-      className={`group relative border border-sage bg-bone overflow-hidden flex flex-col h-[500px] cursor-pointer ${isOutOfStock ? 'opacity-70' : ''}`}
+      className={`group relative border border-sage bg-bone overflow-hidden flex flex-col h-[520px] cursor-pointer ${isOutOfStock ? 'opacity-70' : ''}`}
       onClick={() => router.push(`/shop/${product.id}`)}
     >
-      <div className="relative flex-1 bg-clay/20 overflow-hidden">
+      <div className="relative flex-1 bg-clay/20 overflow-hidden text-deep-olive">
         <div 
           className={`w-full h-full bg-clay/30 transition-all duration-500 group-hover:scale-105 ${isOutOfStock ? 'grayscale' : 'grayscale group-hover:grayscale-0'}`}
           style={{
@@ -65,7 +67,6 @@ export const ProductCard = ({ product }: { product: Product }) => {
           </div>
         )}
         
-        {/* Hover Reveal Buttons */}
         {!isOutOfStock && (
           <div className="absolute bottom-0 left-0 w-full flex flex-col translate-y-full group-hover:translate-y-0 transition-transform duration-300">
             <motion.button
@@ -93,10 +94,21 @@ export const ProductCard = ({ product }: { product: Product }) => {
           <h3 className="font-black text-lg tracking-tighter uppercase leading-none truncate pr-4">
             {product.name}
           </h3>
-          <span className="font-bold text-sm tabular-nums shrink-0 italic text-sage">
-            ${Number(product.price).toFixed(2)}
-          </span>
+          <div className="flex flex-col items-end">
+            <span className="font-bold text-sm tabular-nums shrink-0 italic text-sage">
+              ${Number(product.price).toFixed(2)}
+            </span>
+            <div className="flex items-center gap-1 mt-1">
+              <Star size={10} fill="#E6E49F" className="text-sulfur" />
+              <span className="text-[8px] font-black tabular-nums">{product.avgRating?.toFixed(1) || "0.0"}</span>
+            </div>
+          </div>
         </div>
+
+        <div className="flex items-center gap-2 mb-4 opacity-60">
+          <span className="text-[8px] font-black uppercase tracking-widest text-clay">{product.salesCount || 0} ACQUISITIONS LOGGED</span>
+        </div>
+
         <p className="text-[10px] text-sage font-bold uppercase tracking-widest leading-relaxed line-clamp-2 mb-4">
           {product.category || "General"} / {product.description || "Premium Essential Object"}
         </p>

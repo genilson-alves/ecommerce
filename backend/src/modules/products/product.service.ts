@@ -79,12 +79,29 @@ export const getProducts = async (query: ProductQueryInput) => {
       skip,
       take: limit,
       orderBy,
+      include: {
+        reviews: {
+          select: { rating: true }
+        }
+      }
     }),
     prisma.product.count({ where }),
   ]);
 
+  const productsWithRatings = products.map(p => {
+    const avgRating = p.reviews.length > 0 
+      ? p.reviews.reduce((acc, r) => acc + r.rating, 0) / p.reviews.length 
+      : 0;
+    return {
+      ...p,
+      avgRating,
+      reviewCount: p.reviews.length,
+      reviews: undefined // Remove reviews array from response
+    };
+  });
+
   const result = {
-    data: products,
+    data: productsWithRatings,
     meta: {
       total,
       page,

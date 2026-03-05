@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
 import { PrimaryButton } from "@/components/ui/button";
+import { ReviewModal } from "@/components/auth/ReviewModal";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 const iconTransition = { type: "spring", stiffness: 400, damping: 17 };
@@ -28,6 +29,7 @@ export default function OrdersPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [cancellingOrderId, setCancellingId] = useState<string | null>(null);
+  const [reviewData, setReviewData] = useState<{ productId: string; name: string; orderId: string; existingReview?: any } | null>(null);
 
   useEffect(() => {
     if (!user) router.push("/login");
@@ -62,7 +64,7 @@ export default function OrdersPage() {
 
   return (
     <div className="pt-40 pb-20 px-6 max-w-7xl mx-auto">
-      <Link href="/profile" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-sage hover:text-deep-olive transition-colors mb-8 group w-fit cursor-pointer">
+      <Link href="/profile" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-sage hover:text-deep-olive transition-colors mb-8 group w-fit cursor-pointer text-deep-olive">
         <motion.div whileHover={{ x: -4 }} transition={iconTransition}>
           <ArrowLeft size={14} />
         </motion.div>
@@ -92,13 +94,13 @@ export default function OrdersPage() {
            </motion.div>
         </div>
       ) : (
-        <div className="space-y-12">
+        <div className="space-y-12 text-deep-olive">
           {orders.map((order: any) => {
             const Config = statusConfig[order.status as keyof typeof statusConfig] || statusConfig.PENDING;
             const canCancel = order.status === 'PAID' || order.status === 'PENDING';
 
             return (
-              <div key={order.id} className="border border-sage bg-bone group hover:border-deep-olive transition-colors shadow-sm text-deep-olive">
+              <div key={order.id} className="border border-sage bg-bone group hover:border-deep-olive transition-colors shadow-sm">
                 <div className="p-8 flex flex-col md:flex-row justify-between gap-8 border-b border-sage/30">
                   <div className="space-y-2">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-sage">ID: {order.id}</p>
@@ -129,15 +131,37 @@ export default function OrdersPage() {
 
                 <div className="p-8">
                   <div className="space-y-6">
-                    {order.items.map((item: any) => (
-                      <div key={item.id} className="flex justify-between items-center text-xs font-bold uppercase tracking-widest">
-                        <div className="flex gap-6 items-center">
-                          <span className="text-sage italic">x{item.quantity}</span>
-                          <span>{item.product?.name || "Product Archive"}</span>
+                    {order.items.map((item: any) => {
+                      const isDelivered = order.status === "DELIVERED";
+                      const existingReview = item.product.reviews?.[0]; // Back-relation filter ensures this is current user's review for this product
+                      
+                      return (
+                        <div key={item.id} className="flex justify-between items-center text-xs font-bold uppercase tracking-widest">
+                          <div className="flex gap-6 items-center">
+                            <span className="text-sage italic">x{item.quantity}</span>
+                            <span>{item.product?.name || "Product Archive"}</span>
+                          </div>
+                          <div className="flex items-center gap-6">
+                            {isDelivered && (
+                              <motion.button
+                                whileHover={{ scale: 1.05, color: "#25291C" }}
+                                transition={iconTransition}
+                                onClick={() => setReviewData({ 
+                                  productId: item.productId, 
+                                  name: item.product.name, 
+                                  orderId: order.id,
+                                  existingReview
+                                })}
+                                className="text-[9px] font-black underline underline-offset-4 text-sage cursor-pointer"
+                              >
+                                {existingReview ? "Edit Review" : "Rate Product"}
+                              </motion.button>
+                            )}
+                            <span>${(item.priceAtPurchase * item.quantity).toFixed(2)}</span>
+                          </div>
                         </div>
-                        <span>${(item.priceAtPurchase * item.quantity).toFixed(2)}</span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   
                   <div className="mt-12 pt-8 border-t border-dashed border-sage flex justify-between items-end">
@@ -181,7 +205,7 @@ export default function OrdersPage() {
                   <AlertCircle size={32} strokeWidth={3} />
                 </div>
                 <div>
-                  <h2 className="text-4xl font-black uppercase tracking-tighter italic mb-4 text-deep-olive">Terminate Order?</h2>
+                  <h2 className="text-4xl font-black uppercase tracking-tighter italic mb-4 text-deep-olive text-balance">Terminate Order?</h2>
                   <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-sage">
                     This action is irreversible. All selected objects will be released back to the general inventory.
                   </p>
@@ -210,6 +234,15 @@ export default function OrdersPage() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Review Modal */}
+      <ReviewModal 
+        isOpen={!!reviewData} 
+        onClose={() => setReviewData(null)} 
+        product={{ id: reviewData?.productId || "", name: reviewData?.name || "" }}
+        orderId={reviewData?.orderId || ""}
+        existingReview={reviewData?.existingReview}
+      />
     </div>
   );
 }

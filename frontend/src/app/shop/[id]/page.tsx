@@ -6,10 +6,11 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "@/lib/store";
 import { useAuthStore } from "@/lib/auth-store";
 import { PrimaryButton } from "@/components/ui/button";
-import { Loader2, ArrowLeft, Edit2, Save, X, Plus, Minus, ShoppingBag } from "lucide-react";
+import { Loader2, ArrowLeft, Edit2, Save, X, Plus, Minus, ShoppingBag, Star, MessageSquare } from "lucide-react";
 import { useState, useEffect, Suspense } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { ReviewModal } from "@/components/auth/ReviewModal";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 const iconTransition = { type: "spring", stiffness: 400, damping: 17 };
@@ -28,12 +29,22 @@ function ProductContent() {
   const [editForm, setEditForm] = useState<any>(null);
   const [showBuyConfirm, setShowBuyConfirm] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [reviewData, setReviewData] = useState<{ productId: string; name: string; orderId: string; existingReview?: any } | null>(null);
 
   const { data: product, isLoading, isError } = useQuery({
     queryKey: ["product", id],
     queryFn: async () => {
       if (!id) return null;
       const response = await axios.get(`${API_URL}/products/${id}`);
+      return response.data;
+    },
+    enabled: !!id,
+  });
+
+  const { data: reviewsData } = useQuery({
+    queryKey: ["reviews", id],
+    queryFn: async () => {
+      const response = await axios.get(`${API_URL}/reviews/product/${id}`);
       return response.data;
     },
     enabled: !!id,
@@ -65,8 +76,9 @@ function ProductContent() {
   if (isLoading) return <div className="h-screen flex items-center justify-center bg-bone"><Loader2 className="animate-spin text-sage" size={48} /></div>;
   if (isError || !product) return (
     <div className="h-screen flex flex-col items-center justify-center bg-bone gap-6 text-center p-6">
-      <h1 className="text-4xl font-black uppercase tracking-tighter italic text-deep-olive">Product Not Found</h1>
-      <button onClick={() => router.push("/shop")} className="text-xs font-bold uppercase tracking-widest underline underline-offset-8 text-sage hover:text-deep-olive transition-colors cursor-pointer">Return to Collection</button>
+      <h1 className="text-4xl font-black uppercase tracking-tighter italic text-deep-olive text-balance">Product Not Found</h1>
+      <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-sage">Verify Identification Code: {id}</p>
+      <button onClick={() => router.push("/shop")} className="text-xs font-bold uppercase tracking-widest underline underline-offset-8 text-sage hover:text-deep-olive transition-colors cursor-pointer text-deep-olive">Return to Collection</button>
     </div>
   );
 
@@ -110,7 +122,7 @@ function ProductContent() {
         whileHover={{ scale: 1.05, x: -4 }}
         transition={iconTransition}
         onClick={() => router.back()}
-        className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-sage hover:text-deep-olive transition-colors mb-12 group cursor-pointer"
+        className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-sage hover:text-deep-olive transition-colors mb-12 group cursor-pointer text-deep-olive"
       >
         <ArrowLeft size={14} /> Back to Collection
       </motion.button>
@@ -141,7 +153,7 @@ function ProductContent() {
           <div className="space-y-4">
             {isEditing ? (
               <input 
-                className="text-6xl font-black uppercase tracking-tighter italic bg-transparent border-b-2 border-deep-olive w-full focus:outline-none"
+                className="text-6xl font-black uppercase tracking-tighter italic bg-transparent border-b-2 border-deep-olive w-full focus:outline-none text-deep-olive"
                 value={editForm?.name || ""}
                 onChange={(e) => setEditForm({...editForm, name: e.target.value})}
               />
@@ -170,22 +182,45 @@ function ProductContent() {
             </div>
           </div>
 
-          <div className="text-4xl font-black tracking-tight tabular-nums text-deep-olive">
-            {isEditing ? (
+          <div className="flex items-center justify-between text-deep-olive border-b border-sage pb-8">
+            <div className="text-4xl font-black tracking-tight tabular-nums">
+              {isEditing ? (
+                <div className="flex items-center gap-2">
+                  $ <input 
+                    type="number"
+                    className="bg-transparent border-b-2 border-deep-olive w-32 focus:outline-none"
+                    value={editForm?.price || 0}
+                    onChange={(e) => setEditForm({...editForm, price: parseFloat(e.target.value)})}
+                  />
+                </div>
+              ) : (
+                `$${Number(product.price).toFixed(2)}`
+              )}
+            </div>
+
+            <div className="flex flex-col items-end gap-1">
               <div className="flex items-center gap-2">
-                $ <input 
-                  type="number"
-                  className="bg-transparent border-b-2 border-deep-olive w-32 focus:outline-none"
-                  value={editForm?.price || 0}
-                  onChange={(e) => setEditForm({...editForm, price: parseFloat(e.target.value)})}
-                />
+                <span className="text-xs font-black tabular-nums">
+                  {reviewsData?.averageRating?.toFixed(1) || "0.0"}
+                </span>
+                <div className="flex gap-0.5">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star 
+                      key={star} 
+                      size={14} 
+                      fill={star <= (reviewsData?.averageRating || 0) ? "#E6E49F" : "transparent"} 
+                      className={star <= (reviewsData?.averageRating || 0) ? "text-sulfur" : "text-sage opacity-30"} 
+                    />
+                  ))}
+                </div>
               </div>
-            ) : (
-              `$${Number(product.price).toFixed(2)}`
-            )}
+              <span className="text-[8px] font-black uppercase tracking-widest text-sage italic">
+                {reviewsData?.totalReviews || 0} VERIFIED EVALUATIONS
+              </span>
+            </div>
           </div>
 
-          <div className="space-y-4 border-t border-sage pt-8 text-deep-olive">
+          <div className="space-y-4 text-deep-olive">
             <label className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage block italic text-sage opacity-50">Description</label>
             {isEditing ? (
               <textarea 
@@ -218,7 +253,7 @@ function ProductContent() {
                   whileHover={{ scale: 1.1, backgroundColor: "rgba(0,0,0,0.05)" }}
                   transition={iconTransition}
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="p-4 transition-colors border-r border-sage cursor-pointer"
+                  className="p-4 transition-colors border-r border-sage cursor-pointer text-deep-olive"
                 >
                   <Minus size={16} />
                 </motion.button>
@@ -227,7 +262,7 @@ function ProductContent() {
                   whileHover={{ scale: 1.1, backgroundColor: "rgba(0,0,0,0.05)" }}
                   transition={iconTransition}
                   onClick={() => setQuantity(quantity + 1)}
-                  className="p-4 transition-colors border-l border-sage cursor-pointer"
+                  className="p-4 transition-colors border-l border-sage cursor-pointer text-deep-olive"
                 >
                   <Plus size={16} />
                 </motion.button>
@@ -279,8 +314,8 @@ function ProductContent() {
               className="relative bg-bone border border-sage p-12 max-w-lg w-full shadow-2xl"
             >
               <div className="flex flex-col items-center text-center space-y-8">
-                <div className="p-4 bg-sulfur border border-sage rounded-full animate-pulse">
-                  <ShoppingBag size={32} strokeWidth={3} className="text-deep-olive" />
+                <div className="p-4 bg-sulfur border border-sage rounded-full animate-pulse text-deep-olive">
+                  <ShoppingBag size={32} strokeWidth={3} />
                 </div>
                 <div>
                   <h2 className="text-4xl font-black uppercase tracking-tighter italic mb-4 text-deep-olive">Confirm Acquisition</h2>
@@ -312,6 +347,92 @@ function ProductContent() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Reviews Section */}
+      <section className="mt-32 pt-20 border-t border-sage text-deep-olive">
+        <div className="flex flex-col md:flex-row justify-between gap-12 mb-20">
+          <div className="space-y-4">
+            <h2 className="text-5xl font-black uppercase tracking-tighter italic leading-none">Verified Objects Analysis</h2>
+            <div className="flex items-center gap-4">
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star 
+                    key={star} 
+                    size={16} 
+                    fill={star <= (reviewsData?.averageRating || 0) ? "#E6E49F" : "transparent"} 
+                    className={star <= (reviewsData?.averageRating || 0) ? "text-sulfur" : "text-sage opacity-30"} 
+                  />
+                ))}
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage">
+                {reviewsData?.averageRating?.toFixed(1) || "0.0"} / {reviewsData?.totalReviews || 0} REVIEWS LOGGED
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-sage border border-sage">
+          {reviewsData?.reviews?.length > 0 ? (
+            reviewsData.reviews.map((review: any) => (
+              <div key={review.id} className="bg-bone p-10 flex flex-col justify-between h-[300px]">
+                <div className="space-y-6">
+                  <div className="flex justify-between items-start">
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star 
+                          key={star} 
+                          size={10} 
+                          fill={star <= review.rating ? "#E6E49F" : "transparent"} 
+                          className={star <= review.rating ? "text-sulfur" : "text-sage opacity-20"} 
+                        />
+                      ))}
+                    </div>
+                    <span className="text-[8px] font-bold text-sage uppercase tracking-widest">{new Date(review.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <p className="text-xs font-bold leading-relaxed uppercase tracking-widest line-clamp-4 text-deep-olive">"{review.comment || "OBJECT PERFORMANCE VALIDATED WITHOUT COMMENT."}"</p>
+                </div>
+                <div className="flex items-center justify-between pt-6 border-t border-sage/20">
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 bg-clay/20 border border-sage rounded-full flex items-center justify-center text-[8px] font-black uppercase text-deep-olive">
+                      {review.user.email[0]}
+                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-sage">{review.user.email.split('@')[0]}</span>
+                  </div>
+                  {user?.email === review.user.email && (
+                    <motion.button
+                      whileHover={{ scale: 1.1, color: "#25291C" }}
+                      transition={iconTransition}
+                      onClick={() => setReviewData({ 
+                        productId: product.id, 
+                        name: product.name, 
+                        orderId: review.orderId,
+                        existingReview: review 
+                      })}
+                      className="text-[8px] font-black uppercase tracking-widest text-sage underline underline-offset-4 cursor-pointer"
+                    >
+                      Edit
+                    </motion.button>
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="md:col-span-3 bg-bone p-20 text-center">
+              <MessageSquare size={32} className="mx-auto mb-6 text-sage opacity-20" />
+              <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-sage italic">No evaluation data currently synchronized for this object.</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Review Modal Integration */}
+      <ReviewModal 
+        isOpen={!!reviewData} 
+        onClose={() => setReviewData(null)} 
+        product={{ id: product.id, name: product.name }}
+        orderId={reviewData?.orderId || ""}
+        existingReview={reviewData?.existingReview}
+      />
     </div>
   );
 }

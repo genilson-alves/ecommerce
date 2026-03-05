@@ -102,7 +102,13 @@ export const getUserOrders = async (userId: string) => {
     include: {
       items: {
         include: {
-          product: true
+          product: {
+            include: {
+              reviews: {
+                where: { userId }
+              }
+            }
+          }
         }
       }
     },

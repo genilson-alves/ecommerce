@@ -5,6 +5,7 @@ import userRoutes from './modules/users/user.routes';
 import productRoutes from './modules/products/product.routes';
 import orderRoutes from './modules/orders/order.routes';
 import paymentRoutes from './modules/payments/payment.routes';
+import reviewRoutes from './modules/reviews/review.routes';
 import { webhook } from './modules/payments/payment.controller';
 
 const app = express();
@@ -21,7 +22,8 @@ app.use(express.json());
 app.use('/api/auth', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/payments', paymentRoutes); // Includes create-intent
+app.use('/api/payments', paymentRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Health check
 app.get('/', (req, res) => {

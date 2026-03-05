@@ -29,6 +29,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orders    Order[]
+  reviews   Review[]
 
   @@map("users")
 }
@@ -44,6 +45,7 @@ model Product {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   orderItems  OrderItem[]
+  reviews     Review[]
 
   @@map("products")
 }
@@ -57,6 +59,7 @@ model Order {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   items       OrderItem[]
+  reviews     Review[]
 
   @@map("orders")
 }
@@ -71,4 +74,21 @@ model OrderItem {
   priceAtPurchase Decimal @db.Decimal(10, 2)
 
   @@map("order_items")
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int      @default(5)
+  comment   String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, orderId, productId])
+  @@map("reviews")
 }
