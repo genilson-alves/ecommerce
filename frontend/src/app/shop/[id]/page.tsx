@@ -132,7 +132,7 @@ function ProductContent() {
            <div 
             className="w-full h-full bg-clay/20 grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
             style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop')`,
+              backgroundImage: `url('${product.imageUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop'}')`,
               backgroundSize: 'cover',
               backgroundPosition: 'center'
             }}

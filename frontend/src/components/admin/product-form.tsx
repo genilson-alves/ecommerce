@@ -139,6 +139,17 @@ export const CreateProductForm = () => {
           </div>
 
           <div className="space-y-4 md:col-span-2">
+            <label className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage block">IMAGE URL (OPTIONAL)</label>
+            <input
+              type="text"
+              {...register("imageUrl")}
+              className="w-full bg-bone border-b-2 border-sage p-4 text-xs font-bold focus:outline-none focus:border-deep-olive transition-all hover:bg-clay/5"
+              placeholder="https://example.com/image.jpg"
+            />
+            {errors.imageUrl && <p className="text-[9px] text-red-500 font-bold uppercase">{errors.imageUrl.message}</p>}
+          </div>
+
+          <div className="space-y-4 md:col-span-2">
             <label className="text-[10px] font-bold uppercase tracking-[0.4em] text-sage block">DESCRIPTION</label>
             <textarea
               {...register("description")}

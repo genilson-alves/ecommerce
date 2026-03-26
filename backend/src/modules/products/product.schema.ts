@@ -6,6 +6,7 @@ export const createProductSchema = z.object({
   price: z.coerce.number().nonnegative("Price cannot be negative"),
   stock: z.coerce.number().int().nonnegative("Stock cannot be negative"),
   category: z.string().optional(),
+  imageUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
 });
 
 export const productQuerySchema = z.object({

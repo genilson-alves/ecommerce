@@ -17,6 +17,7 @@ interface Product {
   stock?: number;
   avgRating?: number;
   salesCount?: number;
+  imageUrl?: string;
 }
 
 export const ProductCard = ({ product }: { product: Product }) => {
@@ -40,6 +41,8 @@ export const ProductCard = ({ product }: { product: Product }) => {
     toast.success(`${product.name.toUpperCase()} ADDED TO COLLECTION`);
   };
 
+  const bgImage = product.imageUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop';
+
   return (
     <motion.div
       layout
@@ -55,7 +58,7 @@ export const ProductCard = ({ product }: { product: Product }) => {
         <div 
           className={`w-full h-full bg-clay/30 transition-all duration-500 group-hover:scale-105 ${isOutOfStock ? 'grayscale' : 'grayscale group-hover:grayscale-0'}`}
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop')`,
+            backgroundImage: `url('${bgImage}')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}
