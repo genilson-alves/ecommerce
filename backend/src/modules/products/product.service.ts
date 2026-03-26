@@ -17,9 +17,11 @@ export const updateProduct = async (id: string, data: any) => {
 };
 
 export const deleteProduct = async (id: string) => {
-  return await prisma.product.delete({
-    where: { id },
-  });
+  return await prisma.$transaction([
+    prisma.review.deleteMany({ where: { productId: id } }),
+    prisma.orderItem.deleteMany({ where: { productId: id } }),
+    prisma.product.delete({ where: { id } }),
+  ]);
 };
 
 export const getProductById = async (id: string) => {
